@@ -351,127 +351,126 @@ export default function UserChatHistoryPage() {
             ?.toUpperCase();
 
           return (
-            <div className="flex items-center gap-3">
-              {/* 👁 VIEW CHAT */}
-              <button
-                type="button"
-                title="View Chat"
-                onClick={() => {
-                  setSelectedSession(row.sessionId);
-                  setOpenModal(true);
-                }}
-                className="text-black hover:text-purple-600 transition"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                </svg>
-              </button>
+          <div className="flex items-center gap-3">
+  {row.status === "COMPLETED" && (
+    <>
+      <button
+        type="button"
+        title="View Chat"
+        onClick={() => {
+          setSelectedSession(row.sessionId);
+          setOpenModal(true);
+        }}
+        className="text-black hover:text-purple-600 transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+        </svg>
+      </button>
 
-              {/* ⏳ PENDING */}
-              {refundStatus === "PENDING" && (
-                <button
-                  type="button"
-                  disabled
-                  title="Refund request pending"
-                  className="cursor-not-allowed opacity-70"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 640"
-                    width="18"
-                    height="18"
-                  >
-                    <path
-                      fill="rgb(30, 48, 80)"
-                      d="M160 64C142.3 64 128 78.3 128 96C128 113.7 142.3 128 160 128L160 139C160 181.4 176.9 222.1 206.9 252.1L274.8 320L206.9 387.9C176.9 417.9 160 458.6 160 501L160 512C142.3 512 128 526.3 128 544C128 561.7 142.3 576 160 576L480 576C497.7 576 512 561.7 512 544C512 526.3 497.7 512 480 512L480 501C480 458.6 463.1 417.9 433.1 387.9L365.2 320L433.1 252.1C463.1 222.1 480 181.4 480 139L480 128C497.7 128 512 113.7 512 96C512 78.3 497.7 64 480 64L160 64zM224 139L224 128L416 128L416 139C416 158 410.4 176.4 400 192L240 192C229.7 176.4 224 158 224 139zM240 448C243.5 442.7 247.6 437.7 252.1 448L400 448C392.5 437.7 387.9 433.1 387.9 448L320 365.2L252.1 433.1C247.6 437.7 243.5 442.1 240 448z"
-                    />
-                  </svg>
-                </button>
-              )}
+      {refundStatus === "PENDING" && (
+        <button
+          type="button"
+          disabled
+          title="Refund request pending"
+          className="cursor-not-allowed opacity-70"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            width="18"
+            height="18"
+          >
+            <path
+              fill="rgb(30, 48, 80)"
+              d="M160 64C142.3 64 128 78.3 128 96C128 113.7 142.3 128 160 128L160 139C160 181.4 176.9 222.1 206.9 252.1L274.8 320L206.9 387.9C176.9 417.9 160 458.6 160 501L160 512C142.3 512 128 526.3 128 544C128 561.7 142.3 576 160 576L480 576C497.7 576 512 561.7 512 544C512 526.3 497.7 512 480 512L480 501C480 458.6 463.1 417.9 433.1 387.9L365.2 320L433.1 252.1C463.1 222.1 480 181.4 480 139L480 128C497.7 128 512 113.7 512 96C512 78.3 497.7 64 480 64L160 64zM224 139L224 128L416 128L416 139C416 158 410.4 176.4 400 192L240 192C229.7 176.4 224 158 224 139zM240 448C243.5 442.7 247.6 437.7 252.1 448L400 448C392.5 437.7 387.9 433.1 387.9 448L320 365.2L252.1 433.1C247.6 437.7 243.5 442.1 240 448z"
+            />
+          </svg>
+        </button>
+      )}
 
-              {/* ✅ APPROVED */}
-              {refundStatus === "APPROVED" && (
-                <button
-                  type="button"
-                  disabled
-                  title="Refund approved"
-                  className="cursor-not-allowed opacity-80"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle cx="12" cy="12" r="9" fill="#22c55e" />
-                    <path
-                      d="M8 12.5L10.5 15L16 9.5"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              )}
+      {refundStatus === "APPROVED" && (
+        <button
+          type="button"
+          disabled
+          title="Refund approved"
+          className="cursor-not-allowed opacity-80"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="12" cy="12" r="9" fill="#22c55e" />
+            <path
+              d="M8 12.5L10.5 15L16 9.5"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
 
-              {/* ❌ REJECTED */}
-              {refundStatus === "REJECTED" && (
-                <button
-                  type="button"
-                  title="Refund rejected - request again"
-                  onClick={() => {
-                    setSelectedSession(row);
-                    setOpenDurationModal(true);
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                   width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle cx="12" cy="12" r="9" fill="#ef4444" />
-                    <path
-                      d="M9 9L15 15M15 9L9 15"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-              )}
+      {refundStatus === "REJECTED" && (
+        <button
+          type="button"
+          title="Refund rejected - request again"
+          onClick={() => {
+            setSelectedSession(row);
+            setOpenDurationModal(true);
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="12" cy="12" r="9" fill="#ef4444" />
+            <path
+              d="M9 9L15 15M15 9L9 15"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      )}
 
-              {/* 💰 NO REFUND REQUEST */}
-              {!refundStatus && (
-                <button
-                  type="button"
-                  title="Request refund"
-                  onClick={() => {
-                    setSelectedSession(row);
-                    setOpenDurationModal(true);
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M12 3a9 9 0 1 0 8.49 12H18.3a7 7 0 1 1-1.95-7.05L14 10.3h7V3.3l-2.25 2.25A8.96 8.96 0 0 0 12 3Z" />
-                  </svg>
-                </button>
-              )}
-            </div>
+      {!refundStatus && (
+        <button
+          type="button"
+          title="Request refund"
+          onClick={() => {
+            setSelectedSession(row);
+            setOpenDurationModal(true);
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M12 3a9 9 0 1 0 8.49 12H18.3a7 7 0 1 1-1.95-7.05L14 10.3h7V3.3l-2.25 2.25A8.96 8.96 0 0 0 12 3Z" />
+          </svg>
+        </button>
+      )}
+    </>
+  )}
+</div>
           );
         },
       },

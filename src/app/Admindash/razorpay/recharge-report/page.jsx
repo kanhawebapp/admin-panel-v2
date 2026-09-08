@@ -5,7 +5,8 @@ import { useApolloClient, useLazyQuery } from "@apollo/client/react";
 import DataTable from "@/components/utils/DataTable";
 import { GET_PAYMENT_REPORTS } from "@/app/graphQL/razorpay";
 import PaymentInvoice from "../PaymentInvoice";
-import { useReactToPrint } from "react-to-print";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { exportExcel } from "@/components/utils/export/exportExcel";
 import { exportPDF } from "@/components/utils/export/exportPDF";
 import { exportCSV } from "@/components/utils/export/exportCsv";
@@ -366,14 +367,78 @@ export default function RazorpayReports() {
       color: "text-indigo-600",
     },
   ];
-  const invoiceRef = useRef();
+const invoiceRef = useRef(null);
+const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
+const handleDownloadInvoice = async (row) => {
+  setSelectedInvoice(row);
 
-  const handlePrint = useReactToPrint({
-    contentRef: invoiceRef,
-    documentTitle: `Invoice-${selectedInvoice?.invoiceNo}`,
-  });
+  // Invoice component ko DOM me render hone ka time do
+  setTimeout(async () => {
+    try {
+      if (!invoiceRef.current) {
+        console.error("Invoice element not found");
+        return;
+      }
+
+      const canvas = await html2canvas(invoiceRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+
+      const imgWidth = pdfWidth;
+      const imgHeight =
+        (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        position,
+        imgWidth,
+        imgHeight
+      );
+
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+
+        pdf.addPage();
+
+        pdf.addImage(
+          imgData,
+          "PNG",
+          0,
+          position,
+          imgWidth,
+          imgHeight
+        );
+
+        heightLeft -= pdfHeight;
+      }
+
+      pdf.save(`Invoice-${row.invoiceNo || row.id}.pdf`);
+    } catch (error) {
+      console.error("Invoice PDF download failed:", error);
+    }
+  }, 300);
+};
   const columns = [
     {
       header: (
@@ -593,13 +658,7 @@ export default function RazorpayReports() {
           <p className="font-semibold text-[10px]">{row.invoiceNo || "-"}</p>
 
           <button className="cursor-pointer"
-            onClick={() => {
-              setSelectedInvoice(row);
-
-              setTimeout(() => {
-                handlePrint();
-              }, 100);
-            }}
+        onClick={() => handleDownloadInvoice(row)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -872,11 +931,22 @@ export default function RazorpayReports() {
           </button>
         </div>
       </div>
-      <div className="hidden">
-        {selectedInvoice && (
-          <PaymentInvoice ref={invoiceRef} data={selectedInvoice} />
-        )}
-      </div>
+  <div
+  style={{
+    position: "fixed",
+    left: "-10000px",
+    top: 0,
+    width: "794px",
+    background: "#ffffff",
+  }}
+>
+  {selectedInvoice && (
+    <PaymentInvoice
+      ref={invoiceRef}
+      data={selectedInvoice}
+    />
+  )}
+</div>
     </div>
   );
 }

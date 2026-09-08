@@ -489,13 +489,6 @@ export default function AstrologerActivities({ astrologerId }) {
             <h3 className="text-xl font-bold">₹ {stats?.totalEarned || 0}</h3>
           </div>
 
-          <div className="bg-red-100 p-4 rounded-xl">
-            <p className="text-xs">Withdrawn</p>
-
-            <h3 className="text-xl font-bold">
-              ₹ {stats?.totalWithdrawn || 0}
-            </h3>
-          </div>
 
           <div className="bg-blue-100 p-4 rounded-xl">
             <p className="text-xs">Total Chats</p>
