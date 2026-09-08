@@ -252,23 +252,24 @@ const handlePDFExport = () => {
               {row.isActive ? "Active" : "Inactive"}
             </span>
 
-            <CustomToggle
-              checked={row.isActive}
-              onChange={async (value) => {
-                try {
-                  await updateUserStatus({
-                    variables: {
-                      userId: row.id,
-                      isActive: value,
-                    },
-                  });
+        <CustomToggle
+  checked={row.isActive}
+  onChange={async (value) => {
+    try {
+      await updateUserStatus({
+        variables: {
+          userId: row.id,
+          isActive: value,
+          isDeleted: value,
+        },
+      });
 
-                  await refetch();
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
-            />
+      await refetch();
+    } catch (err) {
+      console.error(err);
+    }
+  }}
+/>
           </div>
         ),
       },
