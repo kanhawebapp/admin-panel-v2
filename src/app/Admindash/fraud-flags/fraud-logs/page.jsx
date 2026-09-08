@@ -136,7 +136,7 @@ export default function FraudLogsPage() {
                 {row.senderName}
               </Link>
 
-              <p className="font-medium">{row.senderId?.slice(0, 8)}</p>
+              <p className="text-[10px]">{row.senderId?.slice(0, 8)}</p>
             </div>
           );
         },
@@ -159,7 +159,7 @@ export default function FraudLogsPage() {
                 {row.receiverName}
               </Link>
 
-              <p className="font-medium">{row.receiverId?.slice(0, 8)}</p>
+              <p className="text-[10px]">{row.receiverId?.slice(0, 8)}</p>
             </div>
           );
         },
@@ -188,13 +188,13 @@ export default function FraudLogsPage() {
     <div className="group relative">
       <p
         title={row.message}
-        className="truncate text-sm text-gray-700 cursor-pointer"
+        className="truncate text-[10px] text-gray-700 cursor-pointer"
       >
         {row.message}
       </p>
 
-      <div className="absolute left-0 top-full mt-2 hidden group-hover:block z-[9999]">
-        <div className="max-w-80 rounded-lg bg-black p-3 text-sm text-white shadow-xl break-words whitespace-normal">
+      <div className="absolute left-0 top-full mt-2 hidden group-hover:block z-9999">
+        <div className="max-w-80 rounded-lg bg-black p-3 text-[10px] text-white shadow-xl wrap-break-word whitespace-normal">
           {row.message}
         </div>
       </div>
@@ -207,7 +207,7 @@ export default function FraudLogsPage() {
 
         render: (row) => (
           <span
-            className={`px-3 py-1 rounded-xl text-xs font-medium
+            className={`px-3 py-1 rounded-xl text-[10px] 
             ${
               row.status === "FRAUD"
                 ? "bg-red-100 text-red-600"
@@ -227,11 +227,11 @@ export default function FraudLogsPage() {
 
         render: (row) => (
           <div>
-            <p className="text-sm">
+            <p className="text-xs">
               {new Date(row.createdAt).toLocaleDateString()}
             </p>
 
-            <p className="text-xs text-gray-500">
+            <p className="text-[10px] text-gray-500">
               {new Date(row.createdAt).toLocaleTimeString()}
             </p>
           </div>
@@ -263,7 +263,7 @@ export default function FraudLogsPage() {
                   })
                 }
                 onSuccess={fetchFraudLogs}
-                className={`px-4 py-1 rounded-xl text-xs text-white  
+                className={`px-4 py-1 rounded-xl text-[10px] text-white  
             ${
               row.status === "FRAUD"
                 ? "bg-red-700 ring-2 ring-red-300 cursor-not-allowed"
@@ -294,7 +294,7 @@ export default function FraudLogsPage() {
                   })
                 }
                 onSuccess={fetchFraudLogs}
-                className={`px-4 py-1 rounded-xl text-xs text-white 
+                className={`px-4 py-1 rounded-xl text-[10px] text-white 
             ${
               row.status === "FINE"
                 ? "bg-green-700 ring-2 ring-green-300 cursor-not-allowed"
@@ -323,9 +323,17 @@ export default function FraudLogsPage() {
               setSelectedSession(row.sessionId);
               setOpenModal(true);
             }}
-            className="px-3 py-1 rounded-full bg-violet-600 text-white text-xs hover:bg-violet-700 hover:scale-103 cursor-pointer"
+            className="cursor-pointer"
           >
-            Chat
+               <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+        </svg>
           </button>
         ),
       },

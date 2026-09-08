@@ -3,6 +3,7 @@
 import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const GET_PRICE = gql`
   query {
@@ -97,6 +98,7 @@ export default function PricingPanel() {
   };
 
   const handleSave = async () => {
+    toast.success("Updated Successfully")
     await updateConfig({
       variables: {
         ...form,
@@ -213,7 +215,7 @@ export default function PricingPanel() {
           disabled={saving}
           className="w-[40%] rounded-full bg-black text-white py-2 "
         >
-          {saving ? "Saving..." : "Update Pricing"}
+          {saving ? "Saving..." : "Update"}
         </button>
       </div>
 
