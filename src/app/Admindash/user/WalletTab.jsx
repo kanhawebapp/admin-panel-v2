@@ -66,8 +66,8 @@ export default function WalletTab({ userId }) {
       },
 
       {
-        header: "Coins",
-        render: (row) => row.coins,
+        header: "Amount",
+        render: (row) => `₹${row.coins || 0}`,
       },
 
       {
