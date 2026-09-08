@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import DataTable from "@/components/utils/DataTable";
 import Link from "next/link";
-import {  UPDATE_USER_STATUS} from "@/app/graphQL/astroHiring";
+import { UPDATE_USER_STATUS } from "@/app/graphQL/astroHiring";
 import CustomToggle from "@/components/Custom/CustomToggle";
 import ExportMenu from "@/components/Custom/ExportMenu";
 import { exportPDF } from "@/components/utils/export/exportPDF";
@@ -37,59 +37,60 @@ const GET_USERS = gql`
 export default function UsersListPage() {
   const [searchName, setSearchName] = useState("");
   const [searchMobile, setSearchMobile] = useState("");
-const [minBalance, setMinBalance] = useState("");
-const [maxBalance, setMaxBalance] = useState("");
+  const [minBalance, setMinBalance] = useState("");
+  const [maxBalance, setMaxBalance] = useState("");
   const [searchFilterType, setSearchFilterType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
-const [filters, setFilters] = useState({
-  query: "",
-  mobile: "",
-  minBalance: "",
-  maxBalance: "",
-  filterType: "",
-  startDate: "",
-  endDate: "",
-});
+  const [filters, setFilters] = useState({
+    query: "",
+    mobile: "",
+    minBalance: "",
+    maxBalance: "",
+    filterType: "",
+    startDate: "",
+    endDate: "",
+  });
 
- 
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
-setFilters({
-  query: searchName,
-  mobile: searchMobile,
-  minBalance: minBalance,
-  maxBalance: maxBalance,
-  filterType: searchFilterType,
-  startDate,
-  endDate,
-});
+      setFilters({
+        query: searchName,
+        mobile: searchMobile,
+        minBalance: minBalance,
+        maxBalance: maxBalance,
+        filterType: searchFilterType,
+        startDate,
+        endDate,
+      });
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [  searchName,
-  searchMobile,
-  minBalance,
-  maxBalance,
-  searchFilterType,
-  startDate,
-  endDate,]);
+  }, [
+    searchName,
+    searchMobile,
+    minBalance,
+    maxBalance,
+    searchFilterType,
+    startDate,
+    endDate,
+  ]);
 
   const searchInput = {
     page,
     limit,
   };
   const [updateUserStatus] = useMutation(UPDATE_USER_STATUS);
-if (filters.minBalance !== "") {
-  searchInput.minBalance = Number(filters.minBalance);
-}
+  if (filters.minBalance !== "") {
+    searchInput.minBalance = Number(filters.minBalance);
+  }
 
-if (filters.maxBalance !== "") {
-  searchInput.maxBalance = Number(filters.maxBalance);
-}
+  if (filters.maxBalance !== "") {
+    searchInput.maxBalance = Number(filters.maxBalance);
+  }
   if (filters.query) {
     searchInput.query = filters.query;
   }
@@ -109,7 +110,7 @@ if (filters.maxBalance !== "") {
   }
 
   // API CALL
-  const { data, loading, error , refetch } = useQuery(GET_USERS, {
+  const { data, loading, error, refetch } = useQuery(GET_USERS, {
     variables: {
       searchInput,
     },
@@ -121,56 +122,48 @@ if (filters.maxBalance !== "") {
   const totalCount = data?.getUsersListBySearch?.totalCount || 0;
 
   const totalPages = data?.getUsersListBySearch?.totalPages || 1;
-const exportData = users.map((user) => ({
-  ID: user.id,
-  Name: user.name || "N/A",
-  Mobile: user.mobile || "N/A",
-  Gender: user.gender || "N/A",
-  WalletBalance: user.userCoins || 0,
-  Status: user.isActive ? "Active" : "Inactive",
-  CreatedAt: user.createdAt
-    ? new Date(user.createdAt).toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      })
-    : "",
-  UpdatedAt: user.updatedAt
-    ? new Date(user.updatedAt).toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      })
-    : "",
-}));
-const handleExcelExport = () => {
-  if (!exportData.length) {
-    alert("No users available to export");
-    return;
-  }
+  const exportData = users.map((user) => ({
+    ID: user.id,
+    Name: user.name || "N/A",
+    Mobile: user.mobile || "N/A",
+    Gender: user.gender || "N/A",
+    WalletBalance: user.userCoins || 0,
+    Status: user.isActive ? "Active" : "Inactive",
+    CreatedAt: user.createdAt
+      ? new Date(user.createdAt).toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        })
+      : "",
+    UpdatedAt: user.updatedAt
+      ? new Date(user.updatedAt).toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        })
+      : "",
+  }));
+  const handleExcelExport = () => {
+    if (!exportData.length) {
+      alert("No users available to export");
+      return;
+    }
 
-  exportExcel(
-    exportData,
-    "Users List",
-    "UsersList.xlsx"
-  );
-};
+    exportExcel(exportData, "Users List", "UsersList.xlsx");
+  };
 
-const handlePDFExport = () => {
-  if (!exportData.length) {
-    alert("No users available to export");
-    return;
-  }
+  const handlePDFExport = () => {
+    if (!exportData.length) {
+      alert("No users available to export");
+      return;
+    }
 
-  exportPDF(
-    exportData,
-    "Users List",
-    "UsersList.pdf"
-  );
-};
+    exportPDF(exportData, "Users List", "UsersList.pdf");
+  };
   // TABLE COLUMNS
   const columns = useMemo(
     () => [
       {
         header: "Name",
         render: (row) => (
-          <div>         
+          <div>
             <Link
               href={`/Admindash/user/userprofile/${row.id}`}
               className="font-semibold text-violet-600 flex flex-col  hover:underline"
@@ -238,41 +231,41 @@ const handlePDFExport = () => {
           </Link>
         ),
       },
-      {
-        header: "Status",
-        render: (row) => (
-          <div className="flex items-center gap-3">
-            <span
-              className={`px-2 py-1 rounded-full text-xs ${
-                row.isActive
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {row.isActive ? "Active" : "Inactive"}
-            </span>
+    {
+  header: "Status",
+  render: (row) => (
+    <div className="flex items-center gap-3">
+      <span
+        className={`px-2 py-1 rounded-full text-xs ${
+          row.isActive
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-700"
+        }`}
+      >
+        {row.isActive ? "Active" : "Inactive"}
+      </span>
 
-        <CustomToggle
-  checked={row.isActive}
-  onChange={async (value) => {
-    try {
-      await updateUserStatus({
-        variables: {
-          userId: row.id,
-          isActive: value,
-          isDeleted: value,
-        },
-      });
+      <CustomToggle
+        checked={row.isActive}
+        onChange={async (value) => {
+          try {
+            await updateUserStatus({
+              variables: {
+                userId: row.id,
+                isActive: value,
+                isDeleted: !value,
+              },
+            });
 
-      await refetch();
-    } catch (err) {
-      console.error(err);
-    }
-  }}
-/>
-          </div>
-        ),
-      },
+            await refetch();
+          } catch (err) {
+            console.error(err);
+          }
+        }}
+      />
+    </div>
+  ),
+},
     ],
     [],
   );
@@ -283,7 +276,6 @@ const handlePDFExport = () => {
 
   return (
     <div className="p- space-y-3">
-  
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-2xl font-bold">Users List</h1>
 
@@ -292,16 +284,14 @@ const handlePDFExport = () => {
         </div>
       </div>
 
- 
       <div className="grid grid-cols-1 md:grid-cols-7 gap-4 bg-white p-3 rounded-xl shadow border border-gray-200">
-   
-      <input
-  type="text"
-  placeholder="Search by name or ID"
-  value={searchName}
-  onChange={(e) => setSearchName(e.target.value)}
-  className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
-/>
+        <input
+          type="text"
+          placeholder="Search by name or ID"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
+        />
         <input
           type="text"
           placeholder="Search by mobile"
@@ -310,22 +300,22 @@ const handlePDFExport = () => {
           className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
         />
         <input
-  type="number"
-  min="0"
-  placeholder="Min wallet balance"
-  value={minBalance}
-  onChange={(e) => setMinBalance(e.target.value)}
-  className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
-/>
+          type="number"
+          min="0"
+          placeholder="Min wallet balance"
+          value={minBalance}
+          onChange={(e) => setMinBalance(e.target.value)}
+          className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
+        />
 
-<input
-  type="number"
-  min="0"
-  placeholder="Max wallet balance"
-  value={maxBalance}
-  onChange={(e) => setMaxBalance(e.target.value)}
-  className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
-/>
+        <input
+          type="number"
+          min="0"
+          placeholder="Max wallet balance"
+          value={maxBalance}
+          onChange={(e) => setMaxBalance(e.target.value)}
+          className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
+        />
         <select
           value={searchFilterType}
           onChange={(e) => setSearchFilterType(e.target.value)}
@@ -357,18 +347,17 @@ const handlePDFExport = () => {
             className="border rounded-full border-gray-300 px-4 py-2 outline-none"
           />
         )}
-        
-                  <ExportMenu
-                onExcel={handleExcelExport}
-                onPDF={handlePDFExport}
-                onCSV={() => {}}
-                onPrint={() => {}}
-                onExportCurrent={handleExcelExport}
-                onExportAll={() => {}}
-              />
+
+        <ExportMenu
+          onExcel={handleExcelExport}
+          onPDF={handlePDFExport}
+          onCSV={() => {}}
+          onPrint={() => {}}
+          onExportCurrent={handleExcelExport}
+          onExportAll={() => {}}
+        />
       </div>
 
-  
       <div className="overflow-x-auto">
         <div className="w-full bg-white shadow-md rounded-xl border border-gray-200 overflow-hidden">
           {loading ? (
@@ -379,8 +368,7 @@ const handlePDFExport = () => {
         </div>
       </div>
 
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-600">Show</span>
 
