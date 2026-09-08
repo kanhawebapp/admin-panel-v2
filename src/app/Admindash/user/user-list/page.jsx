@@ -35,54 +35,61 @@ const GET_USERS = gql`
 `;
 
 export default function UsersListPage() {
-  // SEARCH STATES
   const [searchName, setSearchName] = useState("");
-
   const [searchMobile, setSearchMobile] = useState("");
-
+const [minBalance, setMinBalance] = useState("");
+const [maxBalance, setMaxBalance] = useState("");
   const [searchFilterType, setSearchFilterType] = useState("");
-
   const [startDate, setStartDate] = useState("");
-
   const [endDate, setEndDate] = useState("");
-
-  // PAGINATION
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
+const [filters, setFilters] = useState({
+  query: "",
+  mobile: "",
+  minBalance: "",
+  maxBalance: "",
+  filterType: "",
+  startDate: "",
+  endDate: "",
+});
 
-  // FINAL FILTERS
-  const [filters, setFilters] = useState({
-    query: "",
-    mobile: "",
-    filterType: "",
-    startDate: "",
-    endDate: "",
-  });
-
-  // DEBOUNCE SEARCH
+ 
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
-
-      setFilters({
-        query: searchName,
-        mobile: searchMobile,
-        filterType: searchFilterType,
-        startDate,
-        endDate,
-      });
+setFilters({
+  query: searchName,
+  mobile: searchMobile,
+  minBalance: minBalance,
+  maxBalance: maxBalance,
+  filterType: searchFilterType,
+  startDate,
+  endDate,
+});
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchName, searchMobile, searchFilterType, startDate, endDate]);
+  }, [  searchName,
+  searchMobile,
+  minBalance,
+  maxBalance,
+  searchFilterType,
+  startDate,
+  endDate,]);
 
-  // SEARCH INPUT
   const searchInput = {
     page,
     limit,
   };
   const [updateUserStatus] = useMutation(UPDATE_USER_STATUS);
+if (filters.minBalance !== "") {
+  searchInput.minBalance = Number(filters.minBalance);
+}
 
+if (filters.maxBalance !== "") {
+  searchInput.maxBalance = Number(filters.maxBalance);
+}
   if (filters.query) {
     searchInput.query = filters.query;
   }
@@ -285,7 +292,7 @@ const handlePDFExport = () => {
       </div>
 
  
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 bg-white p-3 rounded-xl shadow border border-gray-200">
+      <div className="grid grid-cols-1 md:grid-cols-7 gap-4 bg-white p-3 rounded-xl shadow border border-gray-200">
    
       <input
   type="text"
@@ -301,6 +308,23 @@ const handlePDFExport = () => {
           onChange={(e) => setSearchMobile(e.target.value)}
           className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
         />
+        <input
+  type="number"
+  min="0"
+  placeholder="Min wallet balance"
+  value={minBalance}
+  onChange={(e) => setMinBalance(e.target.value)}
+  className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
+/>
+
+<input
+  type="number"
+  min="0"
+  placeholder="Max wallet balance"
+  value={maxBalance}
+  onChange={(e) => setMaxBalance(e.target.value)}
+  className="border rounded-full border-gray-300 placeholder:text-gray-300 px-4 py-1 outline-none"
+/>
         <select
           value={searchFilterType}
           onChange={(e) => setSearchFilterType(e.target.value)}
