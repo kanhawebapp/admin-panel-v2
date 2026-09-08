@@ -703,10 +703,19 @@ export const GET_USER_PROFILE = gql`
   }
 `;
 export const UPDATE_USER_STATUS = gql`
-  mutation UpdateUserStatus($userId: ID!, $isActive: Boolean!) {
-    updateUserStatus(userId: $userId, isActive: $isActive) {
+  mutation UpdateUserStatus(
+    $userId: ID!
+    $isActive: Boolean!
+    $isDeleted: Boolean!
+  ) {
+    updateUserStatus(
+      userId: $userId
+      isActive: $isActive
+      isDeleted: $isDeleted
+    ) {
       id
       isActive
+      isDeleted
     }
   }
 `;
