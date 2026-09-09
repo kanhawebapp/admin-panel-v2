@@ -54,7 +54,7 @@ export default function BannerManager() {
     sortorder: "",
     bannerlink: "",
     language: "en",
-     bannerType: "desktop",
+     bannerType: "DESKTOP",
   });
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function BannerManager() {
         sortorder: editingBanner.sortorder || 0,
         bannerlink: editingBanner.bannerlink || "",
         language: editingBanner.language || "en",
-        bannerType: editingBanner.bannerType || "desktop",
+        bannerType: editingBanner.bannerType || "DESKTOP",
       });
     } else {
       resetForm();
@@ -81,7 +81,7 @@ export default function BannerManager() {
       sortorder: "",
       bannerlink: "",
       language: "en",
-        bannerType: "desktop",
+         bannerType: "DESKTOP",
     });
     setFile(null);
     setEditingBanner(null);
@@ -398,8 +398,8 @@ export default function BannerManager() {
     onChange={handleChange}
     className="w-full border border-gray-200 p-2 rounded-full"
   >
-    <option value="desktop">Desktop</option>
-    <option value="mobile">Mobile</option>
+    <option value="DESKTOP">Desktop</option>
+  <option value="MOBILE">Mobile</option>
   </select>
 </div>
 
