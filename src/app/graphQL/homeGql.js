@@ -116,6 +116,7 @@ export const GET_BANNERS = gql`
       bannerlink
       language
      imageUrl
+     bannerType
       status
     }
   }
