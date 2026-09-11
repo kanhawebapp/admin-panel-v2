@@ -54,6 +54,7 @@ export default function BannerManager() {
     sortorder: "",
     bannerlink: "",
     language: "en",
+     bannerType: "DESKTOP",
   });
 
   useEffect(() => {
@@ -65,6 +66,7 @@ export default function BannerManager() {
         sortorder: editingBanner.sortorder || 0,
         bannerlink: editingBanner.bannerlink || "",
         language: editingBanner.language || "en",
+        bannerType: editingBanner.bannerType || "DESKTOP",
       });
     } else {
       resetForm();
@@ -79,6 +81,7 @@ export default function BannerManager() {
       sortorder: "",
       bannerlink: "",
       language: "en",
+         bannerType: "DESKTOP",
     });
     setFile(null);
     setEditingBanner(null);
@@ -209,6 +212,10 @@ export default function BannerManager() {
     { header: "Heading", accessor: "heading" },
     { header: "Language", accessor: "language" },
     { header: "Sort", accessor: "sortorder" },
+    {
+  header: "Device",
+  accessor: "bannerType",
+},
 
     {
       header: "Image",
@@ -380,6 +387,21 @@ export default function BannerManager() {
               onChange={handleChange}
               className="w-full border border-gray-200 p-2 rounded-full"
             />
+            <div className="space-y-2">
+  <label className="text-sm font-medium text-gray-700">
+    Banner Type
+  </label>
+
+  <select
+    name="bannerType"
+    value={form.bannerType}
+    onChange={handleChange}
+    className="w-full border border-gray-200 p-2 rounded-full"
+  >
+    <option value="DESKTOP">Desktop</option>
+  <option value="MOBILE">Mobile</option>
+  </select>
+</div>
 
             <input
               className="w-full border border-purple-200 p-2 rounded-full"
