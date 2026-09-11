@@ -367,13 +367,12 @@ export default function RazorpayReports() {
       color: "text-indigo-600",
     },
   ];
-const invoiceRef = useRef(null);
-const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const invoiceRef = useRef(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-const handleDownloadInvoice = async (row) => {
+ const handleDownloadInvoice = async (row) => {
   setSelectedInvoice(row);
 
-  // Invoice component ko DOM me render hone ka time do
   setTimeout(async () => {
     try {
       if (!invoiceRef.current) {
@@ -385,9 +384,8 @@ const handleDownloadInvoice = async (row) => {
         scale: 2,
         useCORS: true,
         backgroundColor: "#ffffff",
+        logging: false,
       });
-
-      const imgData = canvas.toDataURL("image/png");
 
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -395,49 +393,41 @@ const handleDownloadInvoice = async (row) => {
         format: "a4",
       });
 
-      const pdfWidth = 210;
-      const pdfHeight = 297;
+      const pageWidth = 210;
+      const pageHeight = 297;
 
-      const imgWidth = pdfWidth;
-      const imgHeight =
-        (canvas.height * imgWidth) / canvas.width;
+      const ratio = canvas.width / canvas.height;
 
-      let heightLeft = imgHeight;
-      let position = 0;
+      let imgWidth = pageWidth;
+      let imgHeight = pageWidth / ratio;
 
-      pdf.addImage(
-        imgData,
-        "PNG",
-        0,
-        position,
-        imgWidth,
-        imgHeight
-      );
-
-      heightLeft -= pdfHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-
-        pdf.addPage();
-
-        pdf.addImage(
-          imgData,
-          "PNG",
-          0,
-          position,
-          imgWidth,
-          imgHeight
-        );
-
-        heightLeft -= pdfHeight;
+      if (imgHeight > pageHeight) {
+        imgHeight = pageHeight;
+        imgWidth = pageHeight * ratio;
       }
 
+      const x = (pageWidth - imgWidth) / 2;
+      const y = (pageHeight - imgHeight) / 2;
+
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        x,
+        y,
+        imgWidth,
+        imgHeight,
+        undefined,
+        "FAST"
+      );
+
       pdf.save(`Invoice-${row.invoiceNo || row.id}.pdf`);
+
+      setSelectedInvoice(null);
     } catch (error) {
       console.error("Invoice PDF download failed:", error);
+      setSelectedInvoice(null);
     }
-  }, 300);
+  }, 500);
 };
   const columns = [
     {
@@ -657,8 +647,9 @@ const handleDownloadInvoice = async (row) => {
         <div className="flex gap-1 items-center">
           <p className="font-semibold text-[10px]">{row.invoiceNo || "-"}</p>
 
-          <button className="cursor-pointer"
-        onClick={() => handleDownloadInvoice(row)}
+          <button
+            className="cursor-pointer"
+            onClick={() => handleDownloadInvoice(row)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -931,22 +922,20 @@ const handleDownloadInvoice = async (row) => {
           </button>
         </div>
       </div>
-  <div
-  style={{
-    position: "fixed",
-    left: "-10000px",
-    top: 0,
-    width: "794px",
-    background: "#ffffff",
-  }}
->
-  {selectedInvoice && (
-    <PaymentInvoice
-      ref={invoiceRef}
-      data={selectedInvoice}
-    />
-  )}
-</div>
+      <div
+        style={{
+          position: "fixed",
+          left: "-10000px",
+          top: 0,
+          width: "794px",
+          background: "#ffffff",
+          overflow: "hidden",
+        }}
+      >
+        {selectedInvoice && (
+          <PaymentInvoice ref={invoiceRef} data={selectedInvoice} />
+        )}
+      </div>
     </div>
   );
 }

@@ -4,6 +4,14 @@ import Image from "next/image";
 import React from "react";
 
 const PaymentInvoice = React.forwardRef(({ data }, ref) => {
+  const COMPANY_DETAILS = {
+  name: "DHWANI ASTRO",
+  gstin: "07ABBFM1961C1ZN",
+  website: "www.dhwaniastro.com",
+  email: "support@dhwaniastro.com",
+  address:
+    "2ND FLOOR, 1511/2B, Kotla Mubarakpur, Bhishma Pitamah Marg, Wazir Nagar, New Delhi, South East Delhi, Delhi, 110003",
+};
   const formatDate = (date) => {
     if (!date) return "-";
 
@@ -41,17 +49,17 @@ const PaymentInvoice = React.forwardRef(({ data }, ref) => {
       justify-content: center;
     }
 
-    .invoice-page {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 0 auto;
-      box-sizing: border-box;
-    }
+.invoice-page {
+  width: 210mm;
+  min-height: 0;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
   }
 `}</style>
 <div
   ref={ref}
-  className=" invoice-page mx-auto box-border w-[210mm] min-h-[297mm] bg-white text-black px-[10mm] py-[9mm] text-[12px]"
+className="invoice-page mx-auto box-border w-[210mm] bg-white text-black px-[10mm] py-[9mm] text-[12px]"
   style={{
     fontFamily: "Arial, Helvetica, sans-serif",
   }}
@@ -71,18 +79,17 @@ const PaymentInvoice = React.forwardRef(({ data }, ref) => {
           <h1 className="text-[20px] font-bold">Payment Invoice</h1>
 
           <p className="text-[13px] mt-1">(Original for recipient)</p>
+  <p className="font-bold mt-5">{COMPANY_DETAILS.name}</p>
 
-          <p className="font-bold mt-5">DHWANI ASTRO</p>
+  <p>Supplier GSTIN: {COMPANY_DETAILS.gstin}</p>
 
-          <p>Supplier GSTIN: {data.supplierGSTIN || "-"}</p>
+  <p>Website: {COMPANY_DETAILS.website}</p>
 
-          <p>Website: {data.website || "-"}</p>
+  <p>E-mail: {COMPANY_DETAILS.email}</p>
 
-          <p>E-mail: {data.email || "-"}</p>
-
-          <p className="mt-1 leading-5">
-            Address - {data.supplierAddress || "-"}
-          </p>
+  <p className="mt-1 leading-5">
+    Address - {COMPANY_DETAILS.address}
+  </p>
         </div>
       </div>
 
