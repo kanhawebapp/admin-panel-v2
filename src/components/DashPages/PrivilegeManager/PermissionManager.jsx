@@ -138,10 +138,7 @@ export default function PermissionManager() {
 
   const handleSubmit = async () => {
     try {
-      if (name.includes(".")) {
-        alert("System permissions cannot be created manually");
-        return;
-      }
+ 
 
       const canSubmit =
         isSuperAdmin ||

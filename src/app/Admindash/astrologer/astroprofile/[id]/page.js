@@ -28,6 +28,10 @@ import Link from "next/link";
 import SessionMessagesModal from "@/app/Admindash/user/SessionModal";
 import dayjs from "dayjs";
 export default function Page() {
+  const { can, isSuperAdmin } = usePermissions();
+
+const canViewProfile =
+  isSuperAdmin || can("astroprofile", "view");
   const [activeTab, setActiveTab] = useState("call");
   const [openPopup, setOpenPopUp] = useState(false);
   const dispatch = useDispatch();
@@ -262,6 +266,18 @@ export default function Page() {
   if (loading || statsLoading) {
     return <Skenton />;
   }
+  if (!canViewProfile) {
+  return (
+    <div className="p-10 text-center">
+      <h2 className="text-xl font-bold">
+        Access Denied
+      </h2>
+      <p className="text-gray-500">
+        You don't have permission to view this profile.
+      </p>
+    </div>
+  );
+}
   return (
     <div className="min-h-screen w-full  flex flex-col gap-2">
       <div className="shadow-md rounded-xl p-3 bg-purple-200 mb-6 flex items-center justify-between">

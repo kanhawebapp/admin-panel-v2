@@ -170,10 +170,19 @@ export const GET_PERMISSIONS = gql`
 `;
 
 export const CREATE_PERMISSION = gql`
-  mutation ($name: String!, $moduleIds: [ID!]!) {
-    createPermission(name: $name, moduleIds: $moduleIds) {
+  mutation CreatePermission(
+    $name: String!
+    $moduleIds: [ID!]!
+    $type: String!
+  ) {
+    createPermission(
+      name: $name
+      moduleIds: $moduleIds
+      type: $type
+    ) {
       id
       name
+      type
     }
   }
 `;
