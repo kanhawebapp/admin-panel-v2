@@ -35,11 +35,9 @@ export default function AstroList() {
   const LIMIT = 50;
   const { can, isSuperAdmin } = usePermissions();
 
-  const canView = isSuperAdmin || can("astrologer", "read");
-  const canUpdate = isSuperAdmin || can("astrologer", "update");
-  const canDelete = isSuperAdmin || can("astrologer", "delete");
-
-  const { confirmState, setConfirmState, executeAction, handleConfirm } =
+const canViewProfile =
+  isSuperAdmin || can("astroprofile", "view");
+      const { confirmState, setConfirmState, executeAction, handleConfirm } =
     useActionHandler();
   const toggleSelection = (id) => {
     setSelectedRows((prev) =>
@@ -106,12 +104,18 @@ export default function AstroList() {
       accessor: "name",
       render: (row) => (
         <div className="flex flex-col">
-          <Link
-            href={`/Admindash/astrologer/astroprofile/${row.id}`}
-            className="font-bold text-purple-500"
-          >
-            {row.displayName}
-          </Link>
+ {canViewProfile ? (
+  <Link
+    href={`/Admindash/astrologer/astroprofile/${row.id}`}
+    className="font-bold text-purple-500 hover:underline"
+  >
+    {row.displayName}
+  </Link>
+) : (
+  <span className="font-bold text-gray-500 cursor-not-allowed">
+    {row.displayName}
+  </span>
+)}
           <small className="text-gray-400">ID: {row.id?.slice(0,8)}</small>
         </div>
       ),
@@ -128,20 +132,20 @@ export default function AstroList() {
       render: (row) => (
         <div className="flex justify-center gap-2">
           {/* VIEW */}
-          <button
-            disabled={!canView}
-            onClick={() => {
-              if (!canView) return;
-              viewProfile(row.id);
-            }}
-            className={`px-2 py-1 text-xs rounded-full ${
-              !canView
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 text-white"
-            }`}
-          >
-            View
-          </button>
+    <button
+  disabled={!canViewProfile}
+  onClick={() => {
+    if (!canViewProfile) return;
+    viewProfile(row.id);
+  }}
+  className={`px-2 py-1 text-xs rounded-full ${
+    !canViewProfile
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+      : "bg-blue-500 text-white"
+  }`}
+>
+  View
+</button>
 
           {/* EDIT */}
           <button
