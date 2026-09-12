@@ -36,8 +36,14 @@ export default function AstroList() {
   const { can, isSuperAdmin } = usePermissions();
 
   const canViewProfile = isSuperAdmin || can("astroprofile", "view");
-    const canUpdate = isSuperAdmin || can("astroprofile", "view");
+  const canEdit = isSuperAdmin || can("astrologer-list", "update");
+  const canDelete = isSuperAdmin || can("astrologer-list", "delete");
 
+  console.log("PERMISSION DEBUG:", {
+    isSuperAdmin,
+    canViewProfile,
+    astroprofileView: can("astroprofile", "view"),
+  });
 
   const { confirmState, setConfirmState, executeAction, handleConfirm } =
     useActionHandler();
@@ -133,50 +139,61 @@ export default function AstroList() {
       header: "Actions",
       render: (row) => (
         <div className="flex justify-center gap-2">
-          {/* VIEW */}
           <button
+            type="button"
             disabled={!canViewProfile}
             onClick={() => {
               if (!canViewProfile) return;
               viewProfile(row.id);
             }}
             className={`px-2 py-1 text-xs rounded-full ${
-              !canViewProfile
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 text-white"
+              canViewProfile
+                ? "bg-blue-500 text-white cursor-pointer"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
             View
           </button>
 
-          {/* EDIT */}
           <button
-            disabled={!canUpdate}
+            type="button"
+            disabled={!canEdit}
             onClick={() => {
-              if (!canUpdate) return;
+              if (!canEdit) return;
               handleEdit(row.id);
             }}
             className={`px-2 py-1 text-xs rounded-full ${
-              !canUpdate
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-yellow-500 text-white"
+              canEdit
+                ? "bg-yellow-500 text-white cursor-pointer"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
             Edit
           </button>
 
-          {/* DELETE */}
-          <ProtectedActionButton
-            module="astrologer"
-            action="delete"
-            executeAction={executeAction}
-            mutationFn={deleteAstrologer}
-            variables={{ astrologerId: row.id }}
-            onSuccess={refetch}
-            className="px-2 py-1 text-xs bg-red-500 text-white rounded-full"
+          <button
+            type="button"
+            disabled={!canDelete}
+            onClick={() => {
+              if (!canDelete) return;
+
+              executeAction({
+                action: "delete",
+                mutationFn: deleteAstrologer,
+                variables: {
+                  astrologerId: row.id,
+                },
+                onSuccess: refetch,
+              });
+            }}
+            className={`px-2 py-1 text-xs rounded-full ${
+              canDelete
+                ? "bg-red-500 text-white cursor-pointer"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
             Delete
-          </ProtectedActionButton>
+          </button>
         </div>
       ),
     },
