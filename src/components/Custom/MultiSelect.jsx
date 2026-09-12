@@ -61,6 +61,7 @@ export default function MultiSelect({
             >
               {opt}
               <button
+               type="button"
                 className="text-black font-bold"
                 onClick={(e) => {
                   e.stopPropagation();

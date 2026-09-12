@@ -46,6 +46,7 @@ const canViewProfile =
       id: astrologerId,
     },
     skip: !astrologerId,
+  fetchPolicy: "network-only",
   });
   const [openModal, setOpenModal] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
