@@ -101,8 +101,20 @@ export default function AddAstro() {
 
   const [addAstrologer, { loading: addLoading, error }] =
     useMutation(ADD_ASTROLOGER);
-  const [updateAstrologer, { loading: updateLoading }] =
-    useMutation(UPDATE_ASTROLOGER);
+const [updateAstrologer, { loading: updateLoading }] = useMutation(
+  UPDATE_ASTROLOGER,
+  {
+    refetchQueries: [
+      {
+        query: GET_ASTROLOGER_BY_ID,
+        variables: {
+          id: astrologerId,
+        },
+      },
+    ],
+    awaitRefetchQueries: true,
+  }
+);
 
   const [dummyLoading, setDummyLoading] = useState(false);
 
@@ -474,7 +486,7 @@ export default function AddAstro() {
 
       dateOfBirth: astro.dateOfBirth ? astro.dateOfBirth.split("T")[0] : "",
 
-      gender: astro.gender || "MALE",
+      gender: astro.gender || "",
 
       experience: astro.experience || 0,
 
@@ -565,7 +577,7 @@ export default function AddAstro() {
     try {
       const fd = new FormData();
 
-      // console.log("FORM PROFILE PIC:", formData.profilePic);
+       console.log("FORM GENDER:", formData.gender);
 
       if (formData.profilePic instanceof File) {
         fd.append("profilePic", formData.profilePic);
@@ -589,27 +601,27 @@ export default function AddAstro() {
       const existingData = isEditMode
         ? astroData?.getAstrologerById
         : appData?.getApplicationById;
-      const safeFiles = {
-        profilePic:
-          typeof uploadedFiles?.profilePic === "string"
-            ? uploadedFiles.profilePic
-            : existingData?.profilePic || null,
+     const safeFiles = {
+  profilePic:
+    typeof uploadedFiles?.profilePic === "string"
+      ? uploadedFiles.profilePic
+      : existingData?.profilePic || null,
 
-        aadhaar:
-          typeof uploadedFiles?.aadhaar === "string"
-            ? uploadedFiles.aadhaar
-            : existingData?.kycDetail?.aadhaarImage || null,
+  aadhaar:
+    typeof uploadedFiles?.aadhaar === "string"
+      ? uploadedFiles.aadhaar
+      : existingData?.kycDetail?.aadhaarImage || null,
 
-        panCard:
-          typeof uploadedFiles?.panCard === "string"
-            ? uploadedFiles.panCard
-            : existingData?.kycDetail?.panImage || null,
+  panCard:
+    typeof uploadedFiles?.panCard === "string"
+      ? uploadedFiles.panCard
+      : existingData?.kycDetail?.panImage || null,
 
-        passbook:
-          typeof uploadedFiles?.passbook === "string"
-            ? uploadedFiles.passbook
-            : existingData?.kycDetail?.passbookImage || null,
-      };
+  passbook:
+    typeof uploadedFiles?.passbook === "string"
+      ? uploadedFiles.passbook
+      : existingData?.kycDetail?.passbookImage || null,
+};
 
       const payload = mapAstrologerPayload({
         ...formData,
@@ -619,7 +631,7 @@ export default function AddAstro() {
         status: true, // ✅ top-level status
       });
 
-      console.log("PAYLOADxxxxxxxxxxxxxx:", payload);
+      console.log("PAYLOAD GENDER:", payload.gender);
 
       let res;
 
@@ -630,7 +642,11 @@ export default function AddAstro() {
             data: payload,
           },
         });
-        console.log("UPDATE RESPONSE:", res?.data?.updateAstrologer);
+        console.log(
+  "UPDATE RESPONSE:",
+  res?.data?.updateAstrologer
+);
+      
 
         toast.success("Astrologer updated successfully ✅");
         router.replace("/Admindash/astrologer/astrologer-list");

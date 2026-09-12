@@ -245,11 +245,18 @@ export const GET_ASTROLOGER_BY_ID = gql`
   }
 `;
 export const UPDATE_ASTROLOGER = gql`
-  mutation UpdateAstrologer($astrologerId: ID!, $data: UpdateAstrologerInput!) {
-    updateAstrologer(astrologerId: $astrologerId, data: $data) {
+  mutation UpdateAstrologer(
+    $astrologerId: ID!
+    $data: UpdateAstrologerInput!
+  ) {
+    updateAstrologer(
+      astrologerId: $astrologerId
+      data: $data
+    ) {
       id
       name
       email
+      gender
     }
   }
 `;
@@ -656,6 +663,7 @@ export const GET_ASTRO_LIST = gql`
         tags
         vtags
         createdAt
+        isDeleted
       }
     }
   }

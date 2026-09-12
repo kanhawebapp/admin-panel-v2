@@ -26,6 +26,11 @@ const DELETE_ASTRO = gql`
     deleteAstrologer(astrologerId: $astrologerId)
   }
 `;
+const RESTORE_ASTRO = gql`
+  mutation RestoreAstrologer($astrologerId: ID!) {
+    restoreAstrologer(astrologerId: $astrologerId)
+  }
+`;
 
 export default function AstroList() {
   const router = useRouter();
@@ -74,7 +79,7 @@ export default function AstroList() {
   const currentPage = data?.getAstrologerListBySearch?.currentPage || page;
 
   const [deleteAstrologer] = useMutation(DELETE_ASTRO);
-
+const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
   const astrologers = data?.getAstrologerListBySearch?.data || [];
 
   const viewProfile = (id) => {
@@ -135,68 +140,105 @@ export default function AstroList() {
       render: (row) => dayjs(row.createdAt).format("DD MMM YYYY hh:mm A"),
     },
 
-    {
-      header: "Actions",
-      render: (row) => (
-        <div className="flex justify-center gap-2">
-          <button
-            type="button"
-            disabled={!canViewProfile}
-            onClick={() => {
-              if (!canViewProfile) return;
-              viewProfile(row.id);
-            }}
-            className={`px-2 py-1 text-xs rounded-full ${
-              canViewProfile
-                ? "bg-blue-500 text-white cursor-pointer"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            View
-          </button>
+  {
+  header: "Actions",
+  render: (row) => {
+    if (row.isDeleted) {
+      return (
+        <div className="flex items-center justify-center gap-3">
+          <span className="px-2 py-1 text-xs rounded-full bg-gray-200 text-gray-600">
+            Inactive
+          </span>
 
           <button
             type="button"
             disabled={!canEdit}
             onClick={() => {
               if (!canEdit) return;
-              handleEdit(row.id);
-            }}
-            className={`px-2 py-1 text-xs rounded-full ${
-              canEdit
-                ? "bg-yellow-500 text-white cursor-pointer"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            Edit
-          </button>
-
-          <button
-            type="button"
-            disabled={!canDelete}
-            onClick={() => {
-              if (!canDelete) return;
 
               executeAction({
-                action: "delete",
-                mutationFn: deleteAstrologer,
+                action: "activate",
+                mutationFn: restoreAstrologer,
                 variables: {
                   astrologerId: row.id,
                 },
                 onSuccess: refetch,
               });
             }}
-            className={`px-2 py-1 text-xs rounded-full ${
-              canDelete
-                ? "bg-red-500 text-white cursor-pointer"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${
+              canEdit
+                ? "bg-gray-400 cursor-pointer"
+                : "bg-gray-300 cursor-not-allowed"
             }`}
+            title="Activate astrologer"
           >
-            Delete
+            <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white transition" />
           </button>
         </div>
-      ),
-    },
+      );
+    }
+
+    return (
+      <div className="flex justify-center gap-2">
+        <button
+          type="button"
+          disabled={!canViewProfile}
+          onClick={() => {
+            if (!canViewProfile) return;
+            viewProfile(row.id);
+          }}
+          className={`px-2 py-1 text-xs rounded-full ${
+            canViewProfile
+              ? "bg-blue-500 text-white cursor-pointer"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          View
+        </button>
+
+        <button
+          type="button"
+          disabled={!canEdit}
+          onClick={() => {
+            if (!canEdit) return;
+            handleEdit(row.id);
+          }}
+          className={`px-2 py-1 text-xs rounded-full ${
+            canEdit
+              ? "bg-yellow-500 text-white cursor-pointer"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Edit
+        </button>
+
+        <button
+          type="button"
+          disabled={!canDelete}
+          onClick={() => {
+            if (!canDelete) return;
+
+            executeAction({
+              action: "delete",
+              mutationFn: deleteAstrologer,
+              variables: {
+                astrologerId: row.id,
+              },
+              onSuccess: refetch,
+            });
+          }}
+          className={`px-2 py-1 text-xs rounded-full ${
+            canDelete
+              ? "bg-red-500 text-white cursor-pointer"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Delete
+        </button>
+      </div>
+    );
+  },
+},
   ];
 
   /* =========================
