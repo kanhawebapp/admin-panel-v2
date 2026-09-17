@@ -21,14 +21,14 @@ export const authTokenVar = makeVar(null);
 const httpLink = new HttpLink({
   uri:
     process.env.NEXT_PUBLIC_GRAPHQL_URL ||
-    "https://dhwaniastro.com/adminAuth/graphql",
+    "https://staging.dhwaniastro.com/adminAuth/graphql",
   credentials: "include",
 });
 
 const uploadLink = new UploadHttpLink({
   uri:
     process.env.NEXT_PUBLIC_GRAPHQL_URL ||
-    "https://dhwaniastro.com/adminAuth/graphql",
+    "https://staging.dhwaniastro.com/adminAuth/graphql",
   credentials: "include",
   headers: {
     "apollo-require-preflight": "true",
