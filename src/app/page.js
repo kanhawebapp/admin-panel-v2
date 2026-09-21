@@ -28,7 +28,7 @@ const LOGIN_STAFF = gql`
 
 export default function StaffLogin() {
   const router = useRouter();
-const [loginError, setLoginError] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -67,46 +67,46 @@ const [loginError, setLoginError] = useState("");
         router.push("/Admindash");
       }
     },
-   onError: (err) => {
-  const message =
-    err?.graphQLErrors?.[0]?.message ||
-    err?.networkError?.message ||
-    err?.message ||
-    "Login failed";
+    onError: (err) => {
+      const message =
+        err?.graphQLErrors?.[0]?.message ||
+        err?.networkError?.message ||
+        err?.message ||
+        "Login failed";
 
-  setLoginError(message);
-  toast.error(message);
-},
+      setLoginError(message);
+      toast.error(message);
+    },
   });
 
-const handleChange = (e) => {
-  setLoginError("");
+  const handleChange = (e) => {
+    setLoginError("");
 
-  setForm((prev) => ({
-    ...prev,
-    [e.target.name]: e.target.value,
-  }));
-};
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-const handleSubmit = async () => {
-  const { email, password } = form;
+  const handleSubmit = async () => {
+    const { email, password } = form;
 
-  setLoginError("");
+    setLoginError("");
 
-  if (!email) {
-    setLoginError("Email is required");
-    return;
-  }
+    if (!email) {
+      setLoginError("Email is required");
+      return;
+    }
 
-  if (!password) {
-    setLoginError("Password is required");
-    return;
-  }
+    if (!password) {
+      setLoginError("Password is required");
+      return;
+    }
 
-  await loginStaff({
-    variables: { email, password },
-  });
-};
+    await loginStaff({
+      variables: { email, password },
+    });
+  };
   // onCompleted: async (data) => {
   //   const { accessToken, user } = data.loginStaff;
 
@@ -190,24 +190,24 @@ const handleSubmit = async () => {
             </button>
           </div>
 
-      {loginError && (
-  <p className="text-red-400 text-sm text-center mb-3">
-    {loginError}
-  </p>
-)}
+          {loginError && (
+            <p className="text-red-400 text-sm text-center mb-3">
+              {loginError}
+            </p>
+          )}
 
-<button
-  onClick={handleSubmit}
-  disabled={loading}
-  className="w-[60%] py-3 rounded-full font-semibold text-white cursor-pointer
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-[60%] py-3 rounded-full font-semibold text-white cursor-pointer
   bg-linear-to-r from-purple-600 to-blue-500
   hover:scale-[1.02] transition-all duration-200
   shadow-[0_0_20px_rgba(168,85,247,0.6)]
   active:scale-[0.98]
   disabled:opacity-50"
->
-  {loading ? "Logging in..." : "Login In"}
-</button>
+          >
+            {loading ? "Logging in..." : "Login In"}
+          </button>
         </div>
 
         <p className="text-center text-gray-400 text-xs mt-6">
