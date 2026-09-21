@@ -263,7 +263,7 @@ export default function DhwaniServicesAdmin() {
       formData.append("image", file);
 
       const res = await fetch(
-        "https://dhwaniastro.com/adminAuth/api/upload-services",
+              `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-services`,
         {
           method: "POST",
           body: formData,
@@ -425,7 +425,7 @@ export default function DhwaniServicesAdmin() {
               >
                 {cat.image && (
                   <Image
-                    src={`https://dhwaniastro.com${cat.image}`}
+                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${cat.image}`}
                     alt={cat.name}
                     width={250}
                     height={150}
@@ -482,7 +482,7 @@ export default function DhwaniServicesAdmin() {
 
                   {item.image && (
                     <Image
-                      src={`https://dhwaniastro.com${item.image}`}
+                      src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${item.image}`}
                       alt=""
                       width={300}
                       height={150}

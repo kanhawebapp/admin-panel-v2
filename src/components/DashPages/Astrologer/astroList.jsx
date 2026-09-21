@@ -1,7 +1,7 @@
 "use client";
 
 import { gql } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import CustomInput from "@/components/Custom/CustomInput";
@@ -22,9 +22,18 @@ import { printTable } from "@/components/utils/export/exportPrint";
 import ExportMenu from "@/components/Custom/ExportMenu";
 import { exportCSV } from "@/components/utils/export/exportCsv";
 const DELETE_ASTRO = gql`
-  mutation DeleteAstrologer($astrologerId: ID!) {
-    deleteAstrologer(astrologerId: $astrologerId)
+ mutation DeleteAstrologer(
+  $id: ID!
+  $remark: String!
+) {
+  deleteAstrologer(
+    id: $id
+    remark: $remark
+  ) {
+    success
+    message
   }
+}
 `;
 const RESTORE_ASTRO = gql`
   mutation RestoreAstrologer($astrologerId: ID!) {
@@ -39,10 +48,11 @@ export default function AstroList() {
   const [selectedRows, setSelectedRows] = useState([]);
   const LIMIT = 50;
   const { can, isSuperAdmin } = usePermissions();
-
+const [selectedAstrologer, setSelectedAstrologer] = useState(null);
   const canViewProfile = isSuperAdmin || can("astroprofile", "view");
   const canEdit = isSuperAdmin || can("astrologer-list", "update");
   const canDelete = isSuperAdmin || can("astrologer-list", "delete");
+const [loggedInUser, setLoggedInUser] = useState(null);
 
   console.log("PERMISSION DEBUG:", {
     isSuperAdmin,
@@ -90,6 +100,39 @@ const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
     router.push(`/Admindash/astrologer/edit-astrologer/${id}`);
   };
 
+
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+
+  if (storedUser) {
+    try {
+      setLoggedInUser(JSON.parse(storedUser));
+    } catch (error) {
+      console.error("Invalid user data in localStorage", error);
+    }
+  }
+}, []);
+  const deletedBy = loggedInUser?.name || "Unknown User";
+const handleDeleteAstrologer = async (id, remark) => {
+  try {
+    await deleteAstrologer({
+      variables: {
+        id,
+        remark,
+      },
+    });
+
+    toast.success("Astrologer deleted successfully");
+
+    setConfirmState(false);
+    setSelectedAstrologer(null);
+
+    refetch();
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to delete astrologer");
+  }
+};
   const columns = [
     {
       header: (
@@ -174,6 +217,67 @@ const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
           >
             <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white transition" />
           </button>
+
+          {astrologer.isDeleted && (
+  <div className="relative group">
+    <button
+      type="button"
+      className="w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-help"
+    >
+      📝
+    </button>
+
+    <div className="absolute hidden group-hover:block z-50 bottom-full right-0 mb-2 w-72">
+      <div className="bg-gray-900 text-white rounded-xl p-4 shadow-xl text-xs">
+        
+        <p className="font-semibold text-sm mb-2">
+          Delete Information
+        </p>
+
+        <div className="space-y-2">
+          <div>
+            <span className="text-gray-400">
+              Remark:
+            </span>
+
+            <p className="mt-1">
+              {astrologer.deleteRemark || "N/A"}
+            </p>
+          </div>
+
+          <div>
+            <span className="text-gray-400">
+              Deleted By:
+            </span>
+
+            <p>
+              {astrologer.deletedByName || "N/A"}
+            </p>
+          </div>
+
+          <div>
+            <span className="text-gray-400">
+              Deleted At:
+            </span>
+
+            <p>
+              {astrologer.deletedAt
+                ? new Date(astrologer.deletedAt).toLocaleString(
+                    "en-IN",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }
+                  )
+                : "N/A"}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
         </div>
       );
     }
@@ -316,12 +420,22 @@ const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
         />
       </div>
 
-      {/* CONFIRM MODAL */}
-      <ConfirmModal
-        open={!!confirmState}
-        onCancel={() => setConfirmState(null)}
-        onConfirm={handleConfirm}
-      />
+    <ConfirmModal
+  open={!!confirmState}
+  onCancel={() => {
+    setConfirmState(false);
+    setSelectedAstrologer(null);
+  }}
+  requireRemark={true}
+  title="Delete Astrologer?"
+  description="Please provide a reason before deleting this astrologer."
+  onConfirm={(remark) => {
+    handleDeleteAstrologer(
+      selectedAstrologer.id,
+      remark
+    );
+  }}
+/>
 
       {loading ? (
         <p className="p-4">Loading...</p>
@@ -340,3 +454,7 @@ const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
     </div>
   );
 }
+
+
+
+

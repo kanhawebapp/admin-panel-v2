@@ -113,7 +113,7 @@ export default function AboutPageAdmin() {
             fd.append("mentorImage", mentor.image);
 
             const uploadRes = await fetch(
-              "https://dhwaniastro.com/adminAuth/api/upload-documents",
+              `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-documents`,
               {
                 method: "POST",
                 body: fd,
@@ -146,7 +146,7 @@ export default function AboutPageAdmin() {
             fd.append("founderImage", founder.image);
 
             const uploadRes = await fetch(
-              "https://dhwaniastro.com/adminAuth/api/upload-documents",
+                          `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-documents`,
               {
                 method: "POST",
                 body: fd,
@@ -221,14 +221,14 @@ export default function AboutPageAdmin() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
           {/* ================= HERO ================= */}
 
-          <div className="border rounded-2xl p-6 space-y-6">
+          <div className="border border-gray-300 rounded-2xl p-6 space-y-6">
             <h2 className="text-2xl font-semibold">Hero Section</h2>
 
             <input
               {...register("heroTitle")}
               disabled={!isEditing}
               placeholder="Hero Title"
-              className="border p-4 rounded-xl w-full"
+              className="border p-4 border-gray-300 rounded-xl w-full"
             />
 
             <TapEditor
@@ -240,7 +240,7 @@ export default function AboutPageAdmin() {
 
           {/* ================= MENTORS ================= */}
 
-          <div className="border rounded-2xl p-6 space-y-8">
+          <div className="border border-gray-300 rounded-2xl p-6 space-y-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Mentors</h2>
 
@@ -261,20 +261,20 @@ export default function AboutPageAdmin() {
             </div>
 
             {mentorFields.map((item, index) => (
-              <div key={item.id} className="border rounded-xl p-5 space-y-5">
+              <div key={item.id} className="border border-gray-300 rounded-xl p-5 space-y-5">
                 <div className="grid grid-cols-2 gap-5">
                   <input
                     {...register(`mentors.${index}.name`)}
                     placeholder="Name"
                     disabled={!isEditing}
-                    className="border p-4 rounded-xl"
+                    className="border border-gray-300 p-4 rounded-xl"
                   />
 
                   <input
                     {...register(`mentors.${index}.designation`)}
                     placeholder="Designation"
                     disabled={!isEditing}
-                    className="border p-4 rounded-xl"
+                    className="border border-gray-300 p-4 rounded-xl"
                   />
                 </div>
 
@@ -323,7 +323,7 @@ export default function AboutPageAdmin() {
 
           {/* ================= FOUNDERS ================= */}
 
-          <div className="border rounded-2xl p-6 space-y-8">
+          <div className="border  border-gray-300 rounded-2xl p-6 space-y-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Founders</h2>
 
@@ -344,20 +344,20 @@ export default function AboutPageAdmin() {
             </div>
 
             {founderFields.map((item, index) => (
-              <div key={item.id} className="border rounded-xl p-5 space-y-5">
+              <div key={item.id} className="border border-gray-300 rounded-xl p-5 space-y-5">
                 <div className="grid grid-cols-2 gap-5">
                   <input
                     {...register(`founders.${index}.name`)}
                     placeholder="Name"
                     disabled={!isEditing}
-                    className="border p-4 rounded-xl"
+                    className="border border-gray-300 p-4 rounded-xl"
                   />
 
                   <input
                     {...register(`founders.${index}.designation`)}
                     placeholder="Designation"
                     disabled={!isEditing}
-                    className="border p-4 rounded-xl"
+                    className="border border-gray-300 p-4 rounded-xl"
                   />
                 </div>
 
@@ -404,33 +404,33 @@ export default function AboutPageAdmin() {
 
           {/* ================= SEO ================= */}
 
-          <div className="border rounded-2xl p-6 space-y-6">
+          <div className="border border-gray-300 rounded-2xl p-6 space-y-6">
             <h2 className="text-2xl font-semibold">SEO</h2>
 
             <input
               {...register("metaTitle")}
               placeholder="Meta Title"
               disabled={!isEditing}
-              className="border p-4 rounded-xl w-full"
+              className="border border-gray-300 p-4 rounded-xl w-full"
             />
 
             <textarea
               {...register("metaDescription")}
               placeholder="Meta Description"
               disabled={!isEditing}
-              className="border p-4 rounded-xl w-full h-40"
+              className="border border-gray-300 p-4 rounded-xl w-full h-40"
             />
 
             <input
               {...register("keywords")}
               disabled={!isEditing}
               placeholder="keyword1, keyword2"
-              className="border p-4 rounded-xl w-full"
+              className="border border-gray-300 p-4 rounded-xl w-full"
             />
 
             <select
               {...register("status")}
-              className="border p-4 rounded-xl w-full"
+              className="border border-gray-300 p-4 rounded-xl w-full"
             >
               <option value="DRAFT">Draft</option>
 

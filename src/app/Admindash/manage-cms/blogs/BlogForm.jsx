@@ -100,7 +100,7 @@ export default function BlogForm({ mode = "create", slug }) {
                 content: blog.content || "",
 
                 featuredImageUrl: blog.featuredImage
-                    ? `https://dhwaniastro.com${blog.featuredImage}`
+                    ?`${process.env.NEXT_PUBLIC_API_BASE_URL}${blog.featuredImage}`
                     : "",
 
 
@@ -142,7 +142,7 @@ export default function BlogForm({ mode = "create", slug }) {
         imageFormData.append("image", file);
 
         const res = await fetch(
-            "https://dhwaniastro.com/adminAuth/api/blog-images",
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/blog-images`,
             {
                 method: "POST",
                 body: imageFormData,
@@ -337,7 +337,7 @@ export default function BlogForm({ mode = "create", slug }) {
                                 placeholder="Meta Description"
                                 value={formData.metaDescription}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 bg-white/50 rounded-full p-3"
+                               className="w-full border border-gray-300 bg-white/50 rounded-2xl p-3"
                             />
 
                             <input
@@ -425,7 +425,7 @@ export default function BlogForm({ mode = "create", slug }) {
                             <option value="Hindi">Hindi</option>
                         </select>
                     </div>
-                    <div className="border bg-white/50 rounded-xl p-4">
+                    <div className="border border-gray-300 bg-white/50 rounded-xl p-4">
                         <h3 className="font-bold mb-4">Categories</h3>
 
                         <div className="space-y-2">
@@ -445,7 +445,7 @@ export default function BlogForm({ mode = "create", slug }) {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-green-600 text-white py-3 rounded-2xl"
+                        className="w-full bg-green-600 text-white py-3 cursor-pointer rounded-full"
                     >
                         {loading
                             ? mode === "create"
@@ -476,7 +476,7 @@ export default function BlogForm({ mode = "create", slug }) {
                                 schemaMarkup: "",
                             })
                         }
-                        className="w-full bg-gray-600 text-white py-3 rounded-2xl"
+                         className="w-full bg-gray-600 text-white py-3 cursor-pointer rounded-full"
                     >
                         Reset
                     </button>

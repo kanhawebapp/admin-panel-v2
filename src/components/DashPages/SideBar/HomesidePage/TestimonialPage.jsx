@@ -21,6 +21,7 @@ export default function TestimonialPage() {
   const { can, isSuperAdmin } = usePermissions();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
+  const [fileError, setFileError] = useState("");
   const { confirmState, setConfirmState, executeAction, handleConfirm } =
     useActionHandler();
 
@@ -60,7 +61,7 @@ export default function TestimonialPage() {
       setPreview(
         editing.image?.startsWith("http")
           ? editing.image
-          : `https://dhwaniastro.com${editing.image}`,
+          : `${process.env.NEXT_PUBLIC_API_BASE_URL}${editing.image}`,
       );
     } else {
       setForm({
@@ -81,7 +82,7 @@ export default function TestimonialPage() {
       formData.append("image", file);
 
       const res = await fetch(
-        "https://dhwaniastro.com/adminAuth/api/upload-testimonials",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-testimonials`,
         {
           method: "POST",
           body: formData,
@@ -173,21 +174,23 @@ export default function TestimonialPage() {
       {/* LIST */}
       <div className="grid grid-cols-3 gap-4">
         {data?.testimonials?.map((t) => (
-          <div key={t.id} className="border border-gray-300  p-4 rounded-2xl shadow-2xl">
+          <div
+            key={t.id}
+            className="border border-gray-300  p-4 rounded-2xl shadow-2xl"
+          >
             <img
               src={
                 t.image?.startsWith("http")
                   ? t.image
-                  : `https://dhwaniastro.com${t.image}`
+                  : `${process.env.NEXT_PUBLIC_API_BASE_URL}${t.image}`
               }
               className="h-32 w-full rounded-xl object-cover"
             />
 
             <h2 className="font-bold mt-1">{t.name}</h2>
-              <div className="flex gap-5">
-            <p className="text-sm text-gray-500">{t.address}</p>
+            <div className="flex gap-1">
+              <p className="text-xs text-gray-500">{t.address}</p>
 
-          
               {Array.from({ length: t.rating }).map((_, i) => (
                 <span key={i}>⭐</span>
               ))}
@@ -269,18 +272,35 @@ export default function TestimonialPage() {
             )}
             <input
               type="file"
-           
-                            className="w-full border rounded-2xl border-gray-300 shadow-xl p-2 mb-2"
-
+              accept=".jpg,.jpeg,.png,.pdf"
+              className="w-full border rounded-2xl border-gray-300 shadow-xl p-2 mb-1"
               onChange={(e) => {
                 const selectedFile = e.target.files?.[0];
 
                 if (!selectedFile) return;
 
+                const allowedTypes = [
+                  "image/jpeg",
+                  "image/png",
+                  "application/pdf",
+                ];
+
+                if (!allowedTypes.includes(selectedFile.type)) {
+                  setFile(null);
+                  setFileError("Only JPG, PNG or PDF files are allowed.");
+                  e.target.value = "";
+                  return;
+                }
+
+                setFileError("");
                 setFile(selectedFile);
                 setPreview(URL.createObjectURL(selectedFile));
               }}
             />
+
+            {fileError && (
+              <p className="text-[10px] text-red-500 mt-1 mb-2">{fileError}</p>
+            )}
 
             <select
               className="w-full border rounded-2xl border-gray-300 shadow-xl p-2 mb-2"
@@ -296,12 +316,17 @@ export default function TestimonialPage() {
               ))}
             </select>
 
-            <div className="flex justify-center gap-5">
-              <button className=" rounded-full bg-gray-400 " onClick={() => setOpen(false)}>Cancel</button>
+            <div className="flex text-xs justify-center gap-5">
+              <button
+                className=" px-4 py-2 text-white cursor-pointer rounded-full bg-gray-400 "
+                onClick={() => setOpen(false)}
+              >
+                Cancel
+              </button>
 
               <button
                 onClick={handleSubmit}
-                className={`px-4 py-2 rounded-full bg-green-600 text-white ${getPermissionClass(
+                className={`px-4 py-2 rounded-full cursor-pointer bg-green-600 text-white ${getPermissionClass(
                   editing ? canUpdate : canCreate,
                 )}`}
               >

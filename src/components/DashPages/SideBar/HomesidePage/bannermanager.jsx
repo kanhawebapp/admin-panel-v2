@@ -141,7 +141,7 @@ export default function BannerManager() {
     formData.append("image", file);
 
     const res = await fetch(
-      "https://dhwaniastro.com/adminAuth/api/upload-banner",
+     `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-banner`,
       {
         method: "POST",
         body: formData,
@@ -223,7 +223,7 @@ export default function BannerManager() {
         <img
           src={
             row.imageUrl
-              ? `https://dhwaniastro.com${row.imageUrl}`
+             ? `${process.env.NEXT_PUBLIC_API_BASE_URL}${row.imageUrl}`
               : "/no-image.png"
           }
           alt={row.heading}

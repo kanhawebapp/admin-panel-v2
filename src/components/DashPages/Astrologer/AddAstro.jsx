@@ -425,7 +425,7 @@ const [updateAstrologer, { loading: updateLoading }] = useMutation(
       },
     });
     console.log("KYC DATA:", app.kycDetail);
-    const BASE_URL = "https://dhwaniastro.com/adminAuth/api/upload-documents";
+   const BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-documents`;
     setExistingDocs({
       aadhaar: app.kycDetail?.aadhaarImage
         ? BASE_URL + app.kycDetail.aadhaarImage
@@ -531,7 +531,7 @@ const [updateAstrologer, { loading: updateLoading }] = useMutation(
 
       if (path.startsWith("http")) return path;
 
-      return `https://dhwaniastro.com${path}`;
+       return `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}`;
     };
 
     setExistingDocs({
@@ -600,7 +600,7 @@ const [updateAstrologer, { loading: updateLoading }] = useMutation(
       });
 
       const uploadRes = await fetch(
-        "https://dhwaniastro.com/adminAuth/api/upload-documents",
+         `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-documents`,
         {
           method: "POST",
           body: fd,
