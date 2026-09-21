@@ -20,7 +20,7 @@ export default function BlogCard({ blog, onEdit, onDelete }) {
         src={
           blog.featuredImage?.startsWith("http")
             ? blog.featuredImage
-            : `https://dhwaniastro.com${blog.featuredImage}`
+            :`${process.env.NEXT_PUBLIC_API_BASE_URL}${blog.featuredImage}`
         }
         alt={blog.title}
         width={800}

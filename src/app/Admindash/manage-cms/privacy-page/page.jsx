@@ -108,7 +108,7 @@ export default function PrivacyPageAdmin() {
               {...register("title")}
               disabled={!isEditing}
               placeholder="Privacy Policy"
-              className="border p-4 rounded-xl w-full"
+              className="border border-gray-300 p-4 rounded-xl w-full"
             />
           </div>
 
@@ -123,34 +123,34 @@ export default function PrivacyPageAdmin() {
             />
           </div>
 
-          <div className="border rounded-2xl p-6 space-y-6">
+          <div className="border border-gray-300 rounded-2xl p-6 space-y-6">
             <h2 className="text-2xl font-semibold">SEO</h2>
 
             <input
               {...register("metaTitle")}
               disabled={!isEditing}
               placeholder="Meta Title"
-              className="border p-4 rounded-xl w-full"
+              className="border border-gray-300 p-4 rounded-xl w-full"
             />
 
             <textarea
               {...register("metaDescription")}
               disabled={!isEditing}
               placeholder="Meta Description"
-              className="border p-4 rounded-xl w-full h-40"
+              className="border border-gray-300 p-4 rounded-xl w-full h-40"
             />
 
             <input
               {...register("keywords")}
               disabled={!isEditing}
               placeholder="keyword1, keyword2"
-              className="border p-4 rounded-xl w-full"
+              className="border border-gray-300 p-4 rounded-xl w-full"
             />
 
             <select
               {...register("status")}
               disabled={!isEditing}
-              className="border p-4 rounded-xl w-full"
+              className="border border-gray-300 p-4 rounded-xl w-full"
             >
               <option value="DRAFT">Draft</option>
 
@@ -174,7 +174,7 @@ export default function PrivacyPageAdmin() {
                     status: data?.getPrivacyPage?.status || "DRAFT",
                   });
                 }}
-                className="px-8 py-4 border rounded-xl"
+             className=" border border-gray-300 rounded-full  text-black px-5 text-sm cursor-pointer  py-2"
               >
                 Cancel
               </button>
@@ -182,7 +182,7 @@ export default function PrivacyPageAdmin() {
               <button
                 type="submit"
                 disabled={updateLoading}
-                className="bg-purple-600 text-white px-10 py-4 rounded-xl"
+              className="bg-purple-600 rounded-full  text-white px-5 text-sm cursor-pointer  py-2"
               >
                 {updateLoading
                   ? "Saving..."

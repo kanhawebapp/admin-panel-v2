@@ -78,7 +78,7 @@ export default function MasterManager({
             setSelected(null);
             setOpenDrawer(true);
           }}
-          className="flex items-center gap-2 rounded-full bg-violet-600 px-5 py-3 text-white"
+          className="flex items-center  cursor-pointer gap-2 rounded-full bg-violet-600 px-5 py-3 text-white"
         >
           <Plus size={18} />
           Create {title.slice(0, -1)}

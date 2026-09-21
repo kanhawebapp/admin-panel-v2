@@ -116,7 +116,7 @@ export default function FAQPage() {
                                     setEditing(faq);
                                     setOpen(true);
                                 }}
-                                className={`px-3 py-1 text-xs rounded bg-blue-500 text-white ${!canUpdate ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+                                className={`px-3 py-1 text-xs rounded-full bg-blue-500 text-white ${!canUpdate ? "cursor-not-allowed opacity-70" : "cursor-pointer"
                                     }`}
                             >
                                 Edit
@@ -133,7 +133,7 @@ export default function FAQPage() {
                                     toast.success("Deleted");
                                     refetch();
                                 }}
-                                className={`px-3 py-1 text-xs bg-red-500 text-white rounded ${!(isSuperAdmin || can("faqs", "delete"))
+                                className={`px-3 py-1 text-xs bg-red-500 text-white rounded-full ${!(isSuperAdmin || can("faqs", "delete"))
                                         ? "cursor-not-allowed opacity-70"
                                         : "cursor-pointer"
                                     }`}
@@ -171,9 +171,8 @@ export default function FAQPage() {
                             }
                         />
 
-                        <div className="flex justify-center gap-3">
-                            <button className="rounded-full bg-gray-400 cursor-pointer" onClick={() => setOpen(false)}>Cancel</button>
-
+                        <div className="flex text-xs justify-center gap-3">
+                            <button className="rounded-full px-4 py-2 bg-gray-400 cursor-pointer" onClick={() => setOpen(false)}>Cancel</button>
                             <button
                                 onClick={handleSubmit}
                                 className="px-4 py-2 bg-black text-white cursor-pointer rounded-full"

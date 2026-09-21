@@ -364,7 +364,7 @@ const canViewProfile =
             <div className="flex items-center gap-4">
               <div className="">
                 <Image
-                  src={`https://dhwaniastro.com${astrologerprofile?.profilePic}`}
+                   src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${astrologerprofile?.profilePic}`}
                   alt="Profile"
                   width={150}
                   height={150}
@@ -576,7 +576,7 @@ const canViewProfile =
                       <Image
                         height={100}
                         width={100}
-                        src={`https://dhwaniastro.com${doc.image}`}
+                         src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${doc.image}`}
                         alt={doc.label}
                         unoptimized
                         className="h-24 w-24 object-cover rounded-md"
