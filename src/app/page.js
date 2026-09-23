@@ -28,7 +28,7 @@ const LOGIN_STAFF = gql`
 
 export default function StaffLogin() {
   const router = useRouter();
-
+  const [loginError, setLoginError] = useState("");
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -52,28 +52,36 @@ export default function StaffLogin() {
       localStorage.setItem("user", JSON.stringify(user));
 
       console.log("LocalStorage Token:", localStorage.getItem("token"));
-  document.cookie = `token=${accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+      document.cookie = `token=${accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
       connectSocket({
         adminId: user.id,
         token: accessToken,
       });
 
       toast.success(`Welcome ${user.name}`);
-     const tokentoekn = localStorage.getItem("token");
+      const tokentoekn = localStorage.getItem("token");
       await client.resetStore();
-      if(tokentoekn ){
-        console.log("qwertyuiokjhgfdsdcvbhjgfdsasdfghjhgfd");
-        
-        router.push("/Admindash")
+      if (tokentoekn) {
+        // console.log("qwertyuiokjhgfdsdcvbhjgfdsasdfghjhgfd");
+
+        router.push("/Admindash");
       }
-      
     },
     onError: (err) => {
-      toast.error(err.message || "Login failed");
+      const message =
+        err?.graphQLErrors?.[0]?.message ||
+        err?.networkError?.message ||
+        err?.message ||
+        "Login failed";
+
+      setLoginError(message);
+      toast.error(message);
     },
   });
 
   const handleChange = (e) => {
+    setLoginError("");
+
     setForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -83,8 +91,17 @@ export default function StaffLogin() {
   const handleSubmit = async () => {
     const { email, password } = form;
 
-    if (!email) return toast.error("Email is required");
-    if (!password) return toast.error("Password is required");
+    setLoginError("");
+
+    if (!email) {
+      setLoginError("Email is required");
+      return;
+    }
+
+    if (!password) {
+      setLoginError("Password is required");
+      return;
+    }
 
     await loginStaff({
       variables: { email, password },
@@ -138,11 +155,11 @@ export default function StaffLogin() {
             <input
               name="email"
               type="email"
-              placeholder="admin@dhwaniastro.com"
+              placeholder="Enter your email here ....."
               value={form.email}
               onChange={handleChange}
               className="mt-2 w-full px-4 py-3 rounded-full
-              bg-white/10 text-white placeholder-gray-400
+              bg-white/10 text-white placeholder:text-gray-400
               border border-white/20 
               focus:outline-none focus:ring-2 focus:ring-purple-500
               shadow-inner"
@@ -173,15 +190,21 @@ export default function StaffLogin() {
             </button>
           </div>
 
+          {loginError && (
+            <p className="text-red-400 text-sm text-center mb-3">
+              {loginError}
+            </p>
+          )}
+
           <button
             onClick={handleSubmit}
             disabled={loading}
             className="w-[60%] py-3 rounded-full font-semibold text-white cursor-pointer
-            bg-linear-to-r from-purple-600 to-blue-500
-            hover:scale-[1.02] transition-all duration-200
-            shadow-[0_0_20px_rgba(168,85,247,0.6)]
-            active:scale-[0.98]
-            disabled:opacity-50"
+  bg-linear-to-r from-purple-600 to-blue-500
+  hover:scale-[1.02] transition-all duration-200
+  shadow-[0_0_20px_rgba(168,85,247,0.6)]
+  active:scale-[0.98]
+  disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login In"}
           </button>
