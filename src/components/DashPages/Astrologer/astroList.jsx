@@ -22,20 +22,20 @@ import { printTable } from "@/components/utils/export/exportPrint";
 import ExportMenu from "@/components/Custom/ExportMenu";
 import { exportCSV } from "@/components/utils/export/exportCsv";
 import toast from "react-hot-toast";
+
 const DELETE_ASTRO = gql`
   mutation DeleteAstrologer(
     $astrologerId: ID!
-    $deleteRemark: String!
+    $deleteRemark: String
   ) {
     deleteAstrologer(
       astrologerId: $astrologerId
-      deleteRemark: $remark
-    ) {
-      success
-      message
-    }
+      deleteRemark: $deleteRemark
+    )
   }
 `;
+
+
 const RESTORE_ASTRO = gql`
   mutation RestoreAstrologer($astrologerId: ID!) {
     restoreAstrologer(astrologerId: $astrologerId)
@@ -114,16 +114,17 @@ export default function AstroList() {
     }
   }, []);
   const deletedBy = loggedInUser?.name || "Unknown User";
+
 const handleDeleteAstrologer = async (id, remark) => {
   try {
     const { data } = await deleteAstrologer({
       variables: {
         astrologerId: id,
-        remark,
+        deleteRemark: remark,
       },
     });
 
-    if (data?.deleteAstrologer) {
+    if (data?.deleteAstrologer === true) {
       toast.success("Astrologer deleted successfully");
 
       setDeleteModalOpen(false);
@@ -133,11 +134,14 @@ const handleDeleteAstrologer = async (id, remark) => {
     }
   } catch (error) {
     console.error("Delete astrologer error:", error);
+
     toast.error(
       error?.message || "Failed to delete astrologer"
     );
   }
 };
+
+
   const columns = [
     {
       header: (
