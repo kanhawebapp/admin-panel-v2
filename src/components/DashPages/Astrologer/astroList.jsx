@@ -25,11 +25,11 @@ import toast from "react-hot-toast";
 const DELETE_ASTRO = gql`
   mutation DeleteAstrologer(
     $astrologerId: ID!
-    $remark: String!
+    $deleteRemark: String!
   ) {
     deleteAstrologer(
       astrologerId: $astrologerId
-      remark: $remark
+      deleteRemark: $remark
     ) {
       success
       message
