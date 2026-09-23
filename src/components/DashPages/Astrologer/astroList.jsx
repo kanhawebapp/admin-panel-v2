@@ -21,19 +21,20 @@ import { exportPDF } from "@/components/utils/export/exportPDF";
 import { printTable } from "@/components/utils/export/exportPrint";
 import ExportMenu from "@/components/Custom/ExportMenu";
 import { exportCSV } from "@/components/utils/export/exportCsv";
+import toast from "react-hot-toast";
 const DELETE_ASTRO = gql`
- mutation DeleteAstrologer(
-  $id: ID!
-  $remark: String!
-) {
-  deleteAstrologer(
-    id: $id
-    remark: $remark
+  mutation DeleteAstrologer(
+    $astrologerId: ID!
+    $remark: String!
   ) {
-    success
-    message
+    deleteAstrologer(
+      astrologerId: $astrologerId
+      remark: $remark
+    ) {
+      success
+      message
+    }
   }
-}
 `;
 const RESTORE_ASTRO = gql`
   mutation RestoreAstrologer($astrologerId: ID!) {
@@ -48,11 +49,12 @@ export default function AstroList() {
   const [selectedRows, setSelectedRows] = useState([]);
   const LIMIT = 50;
   const { can, isSuperAdmin } = usePermissions();
-const [selectedAstrologer, setSelectedAstrologer] = useState(null);
+  const [selectedAstrologer, setSelectedAstrologer] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const canViewProfile = isSuperAdmin || can("astroprofile", "view");
   const canEdit = isSuperAdmin || can("astrologer-list", "update");
   const canDelete = isSuperAdmin || can("astrologer-list", "delete");
-const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   console.log("PERMISSION DEBUG:", {
     isSuperAdmin,
@@ -89,7 +91,7 @@ const [loggedInUser, setLoggedInUser] = useState(null);
   const currentPage = data?.getAstrologerListBySearch?.currentPage || page;
 
   const [deleteAstrologer] = useMutation(DELETE_ASTRO);
-const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
+  const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
   const astrologers = data?.getAstrologerListBySearch?.data || [];
 
   const viewProfile = (id) => {
@@ -100,37 +102,40 @@ const [restoreAstrologer] = useMutation(RESTORE_ASTRO);
     router.push(`/Admindash/astrologer/edit-astrologer/${id}`);
   };
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
 
-useEffect(() => {
-  const storedUser = localStorage.getItem("user");
-
-  if (storedUser) {
-    try {
-      setLoggedInUser(JSON.parse(storedUser));
-    } catch (error) {
-      console.error("Invalid user data in localStorage", error);
+    if (storedUser) {
+      try {
+        setLoggedInUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Invalid user data in localStorage", error);
+      }
     }
-  }
-}, []);
+  }, []);
   const deletedBy = loggedInUser?.name || "Unknown User";
 const handleDeleteAstrologer = async (id, remark) => {
   try {
-    await deleteAstrologer({
+    const { data } = await deleteAstrologer({
       variables: {
-        id,
+        astrologerId: id,
         remark,
       },
     });
 
-    toast.success("Astrologer deleted successfully");
+    if (data?.deleteAstrologer) {
+      toast.success("Astrologer deleted successfully");
 
-    setConfirmState(false);
-    setSelectedAstrologer(null);
+      setDeleteModalOpen(false);
+      setSelectedAstrologer(null);
 
-    refetch();
+      refetch();
+    }
   } catch (error) {
-    console.error(error);
-    toast.error("Failed to delete astrologer");
+    console.error("Delete astrologer error:", error);
+    toast.error(
+      error?.message || "Failed to delete astrologer"
+    );
   }
 };
   const columns = [
@@ -183,16 +188,21 @@ const handleDeleteAstrologer = async (id, remark) => {
       render: (row) => dayjs(row.createdAt).format("DD MMM YYYY hh:mm A"),
     },
 
-  {
+ {
   header: "Actions",
+
   render: (row) => {
+
     if (row.isDeleted) {
       return (
         <div className="flex items-center justify-center gap-3">
+
+          {/* Status */}
           <span className="px-2 py-1 text-xs rounded-full bg-gray-200 text-gray-600">
             Inactive
           </span>
 
+          {/* Restore */}
           <button
             type="button"
             disabled={!canEdit}
@@ -215,75 +225,77 @@ const handleDeleteAstrologer = async (id, remark) => {
             }`}
             title="Activate astrologer"
           >
-            <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white transition" />
+            <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white" />
           </button>
 
-          {astrologer.isDeleted && (
-  <div className="relative group">
-    <button
-      type="button"
-      className="w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-help"
-    >
-      📝
-    </button>
+          {/* Delete information */}
+          <div className="relative group">
 
-    <div className="absolute hidden group-hover:block z-50 bottom-full right-0 mb-2 w-72">
-      <div className="bg-gray-900 text-white rounded-xl p-4 shadow-xl text-xs">
-        
-        <p className="font-semibold text-sm mb-2">
-          Delete Information
-        </p>
+            <button
+              type="button"
+              className="w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-help"
+            >
+              📝
+            </button>
 
-        <div className="space-y-2">
-          <div>
-            <span className="text-gray-400">
-              Remark:
-            </span>
+            <div className="absolute hidden group-hover:block z-50 bottom-full right-0 mb-2 w-72">
+              <div className="bg-gray-900 text-white rounded-xl p-4 shadow-xl text-xs">
 
-            <p className="mt-1">
-              {astrologer.deleteRemark || "N/A"}
-            </p>
+                <p className="font-semibold text-sm mb-2">
+                  Delete Information
+                </p>
+
+                <div className="space-y-2">
+
+                  <div>
+                    <span className="text-gray-400">
+                      Remark:
+                    </span>
+                    <p className="mt-1">
+                      {row.deleteRemark || "N/A"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-gray-400">
+                      Deleted By:
+                    </span>
+                    <p>
+                      {row.deletedByName || "N/A"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-gray-400">
+                      Deleted At:
+                    </span>
+                    <p>
+                      {row.deletedAt
+                        ? new Date(row.deletedAt).toLocaleString(
+                            "en-IN",
+                            {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }
+                          )
+                        : "N/A"}
+                    </p>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
           </div>
 
-          <div>
-            <span className="text-gray-400">
-              Deleted By:
-            </span>
-
-            <p>
-              {astrologer.deletedByName || "N/A"}
-            </p>
-          </div>
-
-          <div>
-            <span className="text-gray-400">
-              Deleted At:
-            </span>
-
-            <p>
-              {astrologer.deletedAt
-                ? new Date(astrologer.deletedAt).toLocaleString(
-                    "en-IN",
-                    {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    }
-                  )
-                : "N/A"}
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-)}
         </div>
       );
     }
 
     return (
       <div className="flex justify-center gap-2">
+
         <button
           type="button"
           disabled={!canViewProfile}
@@ -322,14 +334,8 @@ const handleDeleteAstrologer = async (id, remark) => {
           onClick={() => {
             if (!canDelete) return;
 
-            executeAction({
-              action: "delete",
-              mutationFn: deleteAstrologer,
-              variables: {
-                astrologerId: row.id,
-              },
-              onSuccess: refetch,
-            });
+            setSelectedAstrologer(row);
+            setDeleteModalOpen(true);
           }}
           className={`px-2 py-1 text-xs rounded-full ${
             canDelete
@@ -339,6 +345,7 @@ const handleDeleteAstrologer = async (id, remark) => {
         >
           Delete
         </button>
+
       </div>
     );
   },
@@ -420,16 +427,18 @@ const handleDeleteAstrologer = async (id, remark) => {
         />
       </div>
 
-    <ConfirmModal
-  open={!!confirmState}
+  <ConfirmModal
+  open={deleteModalOpen}
   onCancel={() => {
-    setConfirmState(false);
+    setDeleteModalOpen(false);
     setSelectedAstrologer(null);
   }}
   requireRemark={true}
   title="Delete Astrologer?"
   description="Please provide a reason before deleting this astrologer."
   onConfirm={(remark) => {
+    if (!selectedAstrologer) return;
+
     handleDeleteAstrologer(
       selectedAstrologer.id,
       remark
@@ -454,7 +463,3 @@ const handleDeleteAstrologer = async (id, remark) => {
     </div>
   );
 }
-
-
-
-
