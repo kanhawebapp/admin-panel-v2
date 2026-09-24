@@ -1,5 +1,3 @@
-"use client";
-
 import { createContext, useContext, useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 import { GET_MY_ACCESS } from "@/app/graphQL/privilageOperations";
@@ -16,17 +14,13 @@ export const PermissionProvider = ({ children }) => {
     skip: !token,
   });
 
-  // ✅ memoize permissions
   const permissions = useMemo(() => {
     return data?.getMyAccess || [];
   }, [data]);
 
   const isSuperAdmin = useMemo(() => {
     if (!permissions.length) return false;
-    console.log("xxxxxxxxxxxxxxxxxxxxxx");
-    
 
-    // if all modules coming → assume superadmin
     return permissions.every(
       (mod) =>
         mod.permissions.includes(`${mod.slug}.create`) &&
@@ -36,9 +30,9 @@ export const PermissionProvider = ({ children }) => {
     );
   }, [permissions]);
 
+  // Normal module permission
   const can = (module, action) => {
     if (isSuperAdmin) return true;
-    
 
     return permissions.some(
       (mod) =>
@@ -47,15 +41,25 @@ export const PermissionProvider = ({ children }) => {
     );
   };
 
-  // 🔥 THIS IS YOUR ANSWER (yahi add karna hai)
-  const value = useMemo(() => {
-    return {
+  // Exact permission lookup
+  const canPermission = (permission) => {
+    if (isSuperAdmin) return true;
+
+    return permissions.some((mod) =>
+      mod.permissions.includes(permission)
+    );
+  };
+
+  const value = useMemo(
+    () => ({
       permissions,
       loading,
       can,
+      canPermission,
       isSuperAdmin,
-    };
-  }, [permissions, loading]);
+    }),
+    [permissions, loading, isSuperAdmin]
+  );
 
   return (
     <PermissionContext.Provider value={value}>
@@ -68,7 +72,9 @@ export const usePermissions = () => {
   const context = useContext(PermissionContext);
 
   if (!context) {
-    throw new Error("usePermissions must be used inside PermissionProvider");
+    throw new Error(
+      "usePermissions must be used inside PermissionProvider"
+    );
   }
 
   return context;
