@@ -46,6 +46,7 @@ export default function AstroList() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const canViewProfile = isSuperAdmin || can("astroprofile", "view");
   const canEdit = isSuperAdmin || can("astrologer-list", "update");
+  const enableStatus=isSuperAdmin;
   const canDelete = isSuperAdmin || can("astrologer-list", "delete");
   const [loggedInUser, setLoggedInUser] = useState(null);
 
@@ -198,10 +199,12 @@ export default function AstroList() {
 
               <button
                 type="button"
-                disabled={!canEdit}
+                disabled={!enableStatus}
                 onClick={() => {
-                  if (!canEdit) return;
+                  debugger;
+                  if (!enableStatus) return;
 
+                  console.log("commingnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
                   executeAction({
                     action: "activate",
                     mutationFn: restoreAstrologer,
