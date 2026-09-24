@@ -665,6 +665,10 @@ export const GET_ASTRO_LIST = gql`
         vtags
         createdAt
         isDeleted
+        deletedAt
+  deletedById
+  deletedByName
+  deleteRemark
       }
     }
   }
