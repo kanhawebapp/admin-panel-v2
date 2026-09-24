@@ -46,7 +46,7 @@ export default function AstroList() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const canViewProfile = isSuperAdmin || can("astroprofile", "view");
   const canEdit = isSuperAdmin || can("astrologer-list", "update");
-  const enableStatus=isSuperAdmin;
+  const enableStatus = isSuperAdmin || can("astrologer-list", "update");
   const canDelete = isSuperAdmin || can("astrologer-list", "delete");
   const [loggedInUser, setLoggedInUser] = useState(null);
 
@@ -200,29 +200,32 @@ export default function AstroList() {
               <button
                 type="button"
                 disabled={!enableStatus}
-                onClick={() => {
-                  console.log("777777777777777777777777");
-                  debugger;
+                onClick={async () => {
                   if (!enableStatus) return;
-
-                  console.log("commingnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-                  executeAction({
-                    action: "activate",
-                    mutationFn: restoreAstrologer,
-                    variables: {
-                      astrologerId: row.id,
-                    },
-                    onSuccess: refetch,
-                  });
+                  try {
+                    console.log("RESTORE ASTRO:", row.id);
+                    const { data } = await restoreAstrologer({
+                      variables: { astrologerId: row.id },
+                    });
+                    console.log("RESTORE RESPONSE:", data);
+                    if (data?.restoreAstrologer === true) {
+                      toast.success("Astrologer activated successfully");
+                      await refetch();
+                    } else {
+                      toast.error("Failed to activate astrologer");
+                    }
+                  } catch (error) {
+                    console.error("Restore astrologer error:", error);
+                    toast.error(
+                      error?.message || "Failed to activate astrologer",
+                    );
+                  }
                 }}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${
-                  canEdit
-                    ? "bg-gray-400 cursor-pointer"
-                    : "bg-gray-300 cursor-not-allowed"
-                }`}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${enableStatus ? "bg-gray-400 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`}
                 title="Activate astrologer"
               >
-                <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white" />
+                {" "}
+                <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white" />{" "}
               </button>
 
               {/* Delete information */}

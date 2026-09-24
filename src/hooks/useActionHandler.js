@@ -22,7 +22,7 @@ export const useActionHandler = () => {
       toast.error("You are not authorized to perform this action.");
       return;
     }
-
+    console.log("8777777777777777777aaaaaaa");
     setConfirmState({
       mutationFn,
       variables,
@@ -32,9 +32,11 @@ export const useActionHandler = () => {
 
   const handleConfirm = async () => {
     try {
+
       const { mutationFn, variables, onSuccess } = confirmState;
 
       const res = await mutationFn({ variables });
+      console.log("7777777777777779999999999999999999997777777777777",res);
 
       // 🔥 Handle both structured + boolean responses
       const result = res?.data?.[Object.keys(res.data)[0]];
