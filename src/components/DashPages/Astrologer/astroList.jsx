@@ -201,6 +201,7 @@ export default function AstroList() {
                 type="button"
                 disabled={!enableStatus}
                 onClick={() => {
+                  console.log("777777777777777777777777");
                   debugger;
                   if (!enableStatus) return;
 

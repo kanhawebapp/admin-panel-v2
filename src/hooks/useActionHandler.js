@@ -17,7 +17,7 @@ export const useActionHandler = () => {
     variables,
     onSuccess,
   }) => {
-    // 🔥 unified check
+    console.log("66666666666555555555555555")
     if (!(isSuperAdmin || can(module, action))) {
       toast.error("You are not authorized to perform this action.");
       return;
