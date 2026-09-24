@@ -1,36 +1,64 @@
-import { createContext, useContext, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { useQuery } from "@apollo/client/react";
 import { GET_MY_ACCESS } from "@/app/graphQL/privilageOperations";
 
 const PermissionContext = createContext(null);
 
 export const PermissionProvider = ({ children }) => {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("token")
-      : null;
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const loadAuth = () => {
+      const storedToken = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+
+      setToken(storedToken);
+
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          console.error("Invalid user data", error);
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    loadAuth();
+
+    window.addEventListener("auth-change", loadAuth);
+
+    return () => {
+      window.removeEventListener("auth-change", loadAuth);
+    };
+  }, []);
 
   const { data, loading } = useQuery(GET_MY_ACCESS, {
     skip: !token,
+
+    // IMPORTANT
+    fetchPolicy: "network-only",
   });
 
   const permissions = useMemo(() => {
     return data?.getMyAccess || [];
   }, [data]);
 
-  const isSuperAdmin = useMemo(() => {
-    if (!permissions.length) return false;
+  // IMPORTANT:
+  // Super Admin should come from ROLE, not permissions.
+  const isSuperAdmin =
+    user?.role?.name === "SUPER_ADMIN";
 
-    return permissions.every(
-      (mod) =>
-        mod.permissions.includes(`${mod.slug}.create`) &&
-        mod.permissions.includes(`${mod.slug}.read`) &&
-        mod.permissions.includes(`${mod.slug}.update`) &&
-        mod.permissions.includes(`${mod.slug}.delete`)
-    );
-  }, [permissions]);
-
-  // Normal module permission
   const can = (module, action) => {
     if (isSuperAdmin) return true;
 
@@ -41,7 +69,6 @@ export const PermissionProvider = ({ children }) => {
     );
   };
 
-  // Exact permission lookup
   const canPermission = (permission) => {
     if (isSuperAdmin) return true;
 
@@ -57,8 +84,14 @@ export const PermissionProvider = ({ children }) => {
       can,
       canPermission,
       isSuperAdmin,
+      user,
     }),
-    [permissions, loading, isSuperAdmin]
+    [
+      permissions,
+      loading,
+      isSuperAdmin,
+      user,
+    ]
   );
 
   return (
