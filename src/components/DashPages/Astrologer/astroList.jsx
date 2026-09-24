@@ -24,17 +24,10 @@ import { exportCSV } from "@/components/utils/export/exportCsv";
 import toast from "react-hot-toast";
 
 const DELETE_ASTRO = gql`
-  mutation DeleteAstrologer(
-    $astrologerId: ID!
-    $deleteRemark: String
-  ) {
-    deleteAstrologer(
-      astrologerId: $astrologerId
-      deleteRemark: $deleteRemark
-    )
+  mutation DeleteAstrologer($astrologerId: ID!, $deleteRemark: String) {
+    deleteAstrologer(astrologerId: $astrologerId, deleteRemark: $deleteRemark)
   }
 `;
-
 
 const RESTORE_ASTRO = gql`
   mutation RestoreAstrologer($astrologerId: ID!) {
@@ -115,32 +108,29 @@ export default function AstroList() {
   }, []);
   const deletedBy = loggedInUser?.name || "Unknown User";
 
-const handleDeleteAstrologer = async (id, remark) => {
-  try {
-    const { data } = await deleteAstrologer({
-      variables: {
-        astrologerId: id,
-        deleteRemark: remark,
-      },
-    });
+  const handleDeleteAstrologer = async (id, remark) => {
+    try {
+      const { data } = await deleteAstrologer({
+        variables: {
+          astrologerId: id,
+          deleteRemark: remark,
+        },
+      });
 
-    if (data?.deleteAstrologer === true) {
-      toast.success("Astrologer deleted successfully");
+      if (data?.deleteAstrologer === true) {
+        toast.success("Astrologer deleted successfully");
 
-      setDeleteModalOpen(false);
-      setSelectedAstrologer(null);
+        setDeleteModalOpen(false);
+        setSelectedAstrologer(null);
 
-      refetch();
+        refetch();
+      }
+    } catch (error) {
+      console.error("Delete astrologer error:", error);
+
+      toast.error(error?.message || "Failed to delete astrologer");
     }
-  } catch (error) {
-    console.error("Delete astrologer error:", error);
-
-    toast.error(
-      error?.message || "Failed to delete astrologer"
-    );
-  }
-};
-
+  };
 
   const columns = [
     {
@@ -192,168 +182,145 @@ const handleDeleteAstrologer = async (id, remark) => {
       render: (row) => dayjs(row.createdAt).format("DD MMM YYYY hh:mm A"),
     },
 
- {
-  header: "Actions",
+    {
+      header: "Actions",
 
-  render: (row) => {
+      render: (row) => {
+        if (row.isDeleted) {
+          return (
+            <div className="flex items-center justify-center gap-3">
+              {/* Status */}
+              <span className="px-2 py-1 text-xs rounded-full bg-gray-200 text-gray-600">
+                Inactive
+              </span>
 
-    if (row.isDeleted) {
-      return (
-        <div className="flex items-center justify-center gap-3">
+              {/* Restore */}
 
-          {/* Status */}
-          <span className="px-2 py-1 text-xs rounded-full bg-gray-200 text-gray-600">
-            Inactive
-          </span>
+              <button
+                type="button"
+                disabled={!canEdit}
+                onClick={() => {
+                  if (!canEdit) return;
 
-          {/* Restore */}
-          <button
-            type="button"
-            disabled={!canEdit}
-            onClick={() => {
-              if (!canEdit) return;
+                  executeAction({
+                    action: "activate",
+                    mutationFn: restoreAstrologer,
+                    variables: {
+                      astrologerId: row.id,
+                    },
+                    onSuccess: refetch,
+                  });
+                }}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${
+                  canEdit
+                    ? "bg-gray-400 cursor-pointer"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+                title="Activate astrologer"
+              >
+                <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white" />
+              </button>
 
-              executeAction({
-                action: "activate",
-                mutationFn: restoreAstrologer,
-                variables: {
-                  astrologerId: row.id,
-                },
-                onSuccess: refetch,
-              });
-            }}
-            className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${
-              canEdit
-                ? "bg-gray-400 cursor-pointer"
-                : "bg-gray-300 cursor-not-allowed"
-            }`}
-            title="Activate astrologer"
-          >
-            <span className="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white" />
-          </button>
+              {/* Delete information */}
+              <div className="relative group">
+                <button
+                  type="button"
+                  className="w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-help"
+                >
+                  📝
+                </button>
 
-          {/* Delete information */}
-          <div className="relative group">
+                <div className="absolute hidden group-hover:block z-50 bottom-full right-0 mb-2 w-72">
+                  <div className="bg-gray-900 text-white rounded-xl p-4 shadow-xl text-xs">
+                    <p className="font-semibold text-sm mb-2">
+                      Delete Information
+                    </p>
+
+                    <div className="space-y-2">
+                      <div>
+                        <span className="text-gray-400">Remark:</span>
+                        <p className="mt-1">{row.deleteRemark || "N/A"}</p>
+                      </div>
+
+                      <div>
+                        <span className="text-gray-400">Deleted By:</span>
+                        <p>{row.deletedByName || "N/A"}</p>
+                      </div>
+
+                      <div>
+                        <span className="text-gray-400">Deleted At:</span>
+                        <p>
+                          {row.deletedAt
+                            ? new Date(row.deletedAt).toLocaleString("en-IN", {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              })
+                            : "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="flex justify-center gap-2">
+            <button
+              type="button"
+              disabled={!canViewProfile}
+              onClick={() => {
+                if (!canViewProfile) return;
+                viewProfile(row.id);
+              }}
+              className={`px-2 py-1 text-xs rounded-full ${
+                canViewProfile
+                  ? "bg-blue-500 text-white cursor-pointer"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              View
+            </button>
 
             <button
               type="button"
-              className="w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-help"
+              disabled={!canEdit}
+              onClick={() => {
+                if (!canEdit) return;
+                handleEdit(row.id);
+              }}
+              className={`px-2 py-1 text-xs rounded-full ${
+                canEdit
+                  ? "bg-yellow-500 text-white cursor-pointer"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
             >
-              📝
+              Edit
             </button>
 
-            <div className="absolute hidden group-hover:block z-50 bottom-full right-0 mb-2 w-72">
-              <div className="bg-gray-900 text-white rounded-xl p-4 shadow-xl text-xs">
+            <button
+              type="button"
+              disabled={!canDelete}
+              onClick={() => {
+                if (!canDelete) return;
 
-                <p className="font-semibold text-sm mb-2">
-                  Delete Information
-                </p>
-
-                <div className="space-y-2">
-
-                  <div>
-                    <span className="text-gray-400">
-                      Remark:
-                    </span>
-                    <p className="mt-1">
-                      {row.deleteRemark || "N/A"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <span className="text-gray-400">
-                      Deleted By:
-                    </span>
-                    <p>
-                      {row.deletedByName || "N/A"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <span className="text-gray-400">
-                      Deleted At:
-                    </span>
-                    <p>
-                      {row.deletedAt
-                        ? new Date(row.deletedAt).toLocaleString(
-                            "en-IN",
-                            {
-                              dateStyle: "medium",
-                              timeStyle: "short",
-                            }
-                          )
-                        : "N/A"}
-                    </p>
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
+                setSelectedAstrologer(row);
+                setDeleteModalOpen(true);
+              }}
+              className={`px-2 py-1 text-xs rounded-full ${
+                canDelete
+                  ? "bg-red-500 text-white cursor-pointer"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Delete
+            </button>
           </div>
-
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex justify-center gap-2">
-
-        <button
-          type="button"
-          disabled={!canViewProfile}
-          onClick={() => {
-            if (!canViewProfile) return;
-            viewProfile(row.id);
-          }}
-          className={`px-2 py-1 text-xs rounded-full ${
-            canViewProfile
-              ? "bg-blue-500 text-white cursor-pointer"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          View
-        </button>
-
-        <button
-          type="button"
-          disabled={!canEdit}
-          onClick={() => {
-            if (!canEdit) return;
-            handleEdit(row.id);
-          }}
-          className={`px-2 py-1 text-xs rounded-full ${
-            canEdit
-              ? "bg-yellow-500 text-white cursor-pointer"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          Edit
-        </button>
-
-        <button
-          type="button"
-          disabled={!canDelete}
-          onClick={() => {
-            if (!canDelete) return;
-
-            setSelectedAstrologer(row);
-            setDeleteModalOpen(true);
-          }}
-          className={`px-2 py-1 text-xs rounded-full ${
-            canDelete
-              ? "bg-red-500 text-white cursor-pointer"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          Delete
-        </button>
-
-      </div>
-    );
-  },
-},
+        );
+      },
+    },
   ];
 
   /* =========================
@@ -431,24 +398,21 @@ const handleDeleteAstrologer = async (id, remark) => {
         />
       </div>
 
-  <ConfirmModal
-  open={deleteModalOpen}
-  onCancel={() => {
-    setDeleteModalOpen(false);
-    setSelectedAstrologer(null);
-  }}
-  requireRemark={true}
-  title="Delete Astrologer?"
-  description="Please provide a reason before deleting this astrologer."
-  onConfirm={(remark) => {
-    if (!selectedAstrologer) return;
+      <ConfirmModal
+        open={deleteModalOpen}
+        onCancel={() => {
+          setDeleteModalOpen(false);
+          setSelectedAstrologer(null);
+        }}
+        requireRemark={true}
+        title="Delete Astrologer?"
+        description="Please provide a reason before deleting this astrologer."
+        onConfirm={(remark) => {
+          if (!selectedAstrologer) return;
 
-    handleDeleteAstrologer(
-      selectedAstrologer.id,
-      remark
-    );
-  }}
-/>
+          handleDeleteAstrologer(selectedAstrologer.id, remark);
+        }}
+      />
 
       {loading ? (
         <p className="p-4">Loading...</p>
