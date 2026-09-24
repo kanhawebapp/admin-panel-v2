@@ -41,7 +41,11 @@ export default function AstroList() {
   const [page, setPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const LIMIT = 50;
-  const { can, isSuperAdmin } = usePermissions();
+const {
+  can,
+  canPermission,
+  isSuperAdmin,
+} = usePermissions();
   const [selectedAstrologer, setSelectedAstrologer] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const canViewProfile = isSuperAdmin || can("astroprofile", "view");
