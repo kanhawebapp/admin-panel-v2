@@ -37,36 +37,51 @@ export default function StaffLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const { connectSocket } = useContext(SocketContext);
   const [loginStaff, { loading }] = useMutation(LOGIN_STAFF, {
-    onCompleted: async (data) => {
-      console.log("Login Response:", data);
+   onCompleted: async (data) => {
+  console.log("Login Response:", data);
 
-      const { accessToken, refreshToken, user } = data.loginStaff;
+  const { accessToken, refreshToken, user } = data.loginStaff;
 
-      console.log("Access Token:", accessToken);
-      console.log("Refresh Token:", refreshToken);
-      console.log("User:", user);
+  console.log("Access Token:", accessToken);
+  console.log("Refresh Token:", refreshToken);
+  console.log("User:", user);
 
-      authTokenVar(accessToken);
+  // Apollo auth token
+  authTokenVar(accessToken);
 
-      localStorage.setItem("token", accessToken);
-      localStorage.setItem("user", JSON.stringify(user));
+  // Store auth data
+  localStorage.setItem("token", accessToken);
+  localStorage.setItem("user", JSON.stringify(user));
 
-      console.log("LocalStorage Token:", localStorage.getItem("token"));
-      document.cookie = `token=${accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-      connectSocket({
-        adminId: user.id,
-        token: accessToken,
-      });
+  // IMPORTANT:
+  // Notify PermissionProvider that logged-in user changed
+  window.dispatchEvent(new Event("auth-change"));
 
-      toast.success(`Welcome ${user.name}`);
-      const tokentoekn = localStorage.getItem("token");
-      await client.resetStore();
-      if (tokentoekn) {
-        // console.log("qwertyuiokjhgfdsdcvbhjgfdsasdfghjhgfd");
+  console.log(
+    "LocalStorage User:",
+    JSON.parse(localStorage.getItem("user"))
+  );
 
-        router.push("/Admindash");
-      }
-    },
+  console.log(
+    "LocalStorage Role:",
+    JSON.parse(localStorage.getItem("user"))?.role?.name
+  );
+
+  document.cookie = `token=${accessToken}; path=/; max-age=${
+    60 * 60 * 24 * 7
+  }; SameSite=Lax`;
+
+  connectSocket({
+    adminId: user.id,
+    token: accessToken,
+  });
+
+  toast.success(`Welcome ${user.name}`);
+
+  await client.resetStore();
+
+  router.push("/Admindash");
+},
     onError: (err) => {
       const message =
         err?.graphQLErrors?.[0]?.message ||

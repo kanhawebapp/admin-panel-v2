@@ -56,27 +56,27 @@ export const PermissionProvider = ({ children }) => {
 
   // IMPORTANT:
   // Super Admin should come from ROLE, not permissions.
-  const isSuperAdmin =
-    user?.role?.name === "SUPER_ADMIN";
+const roleName = user?.role?.name?.trim()?.toUpperCase();
 
-  const can = (module, action) => {
-    if (isSuperAdmin) return true;
+const isSuperAdmin = roleName === "SUPER_ADMIN";
 
-    return permissions.some(
-      (mod) =>
-        mod.slug === module &&
-        mod.permissions.includes(`${module}.${action}`)
-    );
-  };
+const can = (module, action) => {
+  if (isSuperAdmin) return true;
 
-  const canPermission = (permission) => {
-    if (isSuperAdmin) return true;
+  return permissions.some(
+    (mod) =>
+      mod.slug === module &&
+      mod.permissions?.includes(`${module}.${action}`)
+  );
+};
 
-    return permissions.some((mod) =>
-      mod.permissions.includes(permission)
-    );
-  };
+const canPermission = (permission) => {
+  if (isSuperAdmin) return true;
 
+  return permissions.some((mod) =>
+    mod.permissions?.includes(permission)
+  );
+};
   const value = useMemo(
     () => ({
       permissions,
