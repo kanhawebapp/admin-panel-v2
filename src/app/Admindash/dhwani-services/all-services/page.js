@@ -341,7 +341,7 @@ export default function DhwaniServicesAdmin() {
       formData.append("image", file);
 
       const res = await fetch(
-        "https://dhwaniastro.com/adminAuth/api/upload-services",
+       `${process.env.NEXT_PUBLIC_API_BASE_URL}/adminAuth/api/upload-services`,
         {
           method: "POST",
           body: formData,
