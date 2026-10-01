@@ -145,7 +145,6 @@ export default function AstrologerHiring() {
     const res = await uploadImage({ variables: { file } });
 
     const url = res.data.uploadImage.url;
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", url, res);
 
     setSelected((prev) => ({
       ...prev,
@@ -323,7 +322,6 @@ export default function AstrologerHiring() {
       header: "Profile",
       render: (row) => {
         const isAdded = !!row.astrologerId;
-        // console.log("ROW ID=========================================== =", row.id);
         return (
           <button
             disabled={isAdded || row.approvalStatus !== "APPROVED"}

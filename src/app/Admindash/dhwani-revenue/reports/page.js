@@ -138,11 +138,9 @@ export default function PaymentReportPage() {
   };
 
   const handleExportExcel = () => {
-    console.log("Export to Excel", transactions);
   };
 
   const handleExportPDF = () => {
-    console.log("Export to PDF", transactions);
   };
 
   const columns = useMemo(

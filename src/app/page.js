@@ -38,13 +38,9 @@ export default function StaffLogin() {
   const { connectSocket } = useContext(SocketContext);
   const [loginStaff, { loading }] = useMutation(LOGIN_STAFF, {
    onCompleted: async (data) => {
-  console.log("Login Response:", data);
 
   const { accessToken, refreshToken, user } = data.loginStaff;
 
-  console.log("Access Token:", accessToken);
-  console.log("Refresh Token:", refreshToken);
-  console.log("User:", user);
 
   // Apollo auth token
   authTokenVar(accessToken);
@@ -57,15 +53,8 @@ export default function StaffLogin() {
   // Notify PermissionProvider that logged-in user changed
   window.dispatchEvent(new Event("auth-change"));
 
-  console.log(
-    "LocalStorage User:",
-    JSON.parse(localStorage.getItem("user"))
-  );
 
-  console.log(
-    "LocalStorage Role:",
-    JSON.parse(localStorage.getItem("user"))?.role?.name
-  );
+ 
 
   document.cookie = `token=${accessToken}; path=/; max-age=${
     60 * 60 * 24 * 7

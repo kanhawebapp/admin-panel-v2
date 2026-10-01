@@ -31,8 +31,6 @@ const apidata = (payload) => {
 
 function* packageAddSaga(action) {
     try {
-        console.log("Package Payload:", action.payload);
-
         const response = yield call(apidata, action.payload);
 
         yield put(packageAddSuccessfully(response.data.package));

@@ -48,13 +48,8 @@ export default function OngoingSessions() {
 
     const item = selectedSession;
 
-    console.log("===== CONFIRM END SESSION =====");
-    console.log("Item:", item);
-    console.log("Socket:", socket);
-    console.log("Socket Connected:", socket?.connected);
 
     if (chatEndedRef.current) {
-      console.log("Session already ended");
       return;
     }
 
@@ -83,12 +78,9 @@ export default function OngoingSessions() {
       return;
     }
 
-    console.log(`Emitting ${eventName}`);
-    console.log("Payload:", payload);
 
     socket.emit(eventName, payload);
 
-    console.log("Emit called successfully");
 
     // Prevent duplicate end
     chatEndedRef.current = true;

@@ -18,7 +18,6 @@ const giftDeleteApi = (id) => {
 function* createAddGiftSaga(action) {
     try {
         const response = yield call(apidata, action.payload.formData);
-        console.log("response h ye ", response)
         yield put(addGiftSuccess(response?.data));
     } catch (error) {
         console.log("erro h ye ", error.message);

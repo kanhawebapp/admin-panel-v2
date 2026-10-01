@@ -11,13 +11,11 @@ import { useQuery } from "@apollo/client/react";
 export default function Page() {
   const [userName, setUserName] = useState("");
 
-  // ✅ Get user from localStorage
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user?.name) {
       setUserName(user.name);
     }
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
   }, []);
 
   const { data: deptData, loading: deptLoading } = useQuery(GET_DEPARTMENTS, {

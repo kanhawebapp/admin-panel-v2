@@ -7,10 +7,9 @@ import { useQuery } from "@apollo/client/react";
 export default function Page() {
   const [userName, setUserName] = useState("");
 
-  // ✅ Get user from localStorage
+  //  Get user from localStorage
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     
     if (user?.name) {
       setUserName(user.name);

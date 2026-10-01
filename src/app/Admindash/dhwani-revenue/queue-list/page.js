@@ -48,10 +48,6 @@ export default function WaitingQueue({ astrologerId }) {
 
     const item = selectedItem;
 
-    console.log("===== CONFIRM END SESSION =====");
-    console.log("Item:", item);
-    console.log("Socket:", socket);
-    console.log("Socket Connected:", socket?.connected);
 
     if (chatEndedRef.current) {
       console.log("Session already ended");
@@ -80,12 +76,9 @@ export default function WaitingQueue({ astrologerId }) {
       return;
     }
 
-    console.log(`Emitting ${eventName}`);
-    console.log("Payload:", payload);
 
     socket.emit(eventName, payload);
 
-    console.log("Emit called successfully");
 
     // Close modal
     setShowConfirmModal(false);

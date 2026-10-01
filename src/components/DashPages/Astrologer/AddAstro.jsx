@@ -72,7 +72,6 @@ export default function AddAstro() {
   const [previewImage, setPreviewImage] = useState(null);
   const searchParams = useSearchParams();
   const appId = searchParams.get("appId");
-  // console.log("URL APP ID============== =", appId);
   const astrologerId = params?.id;
   const router = useRouter();
   const isEditMode = !!astrologerId;
@@ -88,7 +87,6 @@ export default function AddAstro() {
     skip: !isEditMode,
   });
 
-  // console.log("ASTRO DATAxxxxxxxxxxxxxxxxxxx:", astroData);
 
   const [existingDocs, setExistingDocs] = useState({});
   const { data: appData, loading: appLoading } = useQuery(

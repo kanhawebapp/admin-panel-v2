@@ -23,7 +23,6 @@ const api = () => {
 function* customerList() {
     try {
         const list = yield call(api);
-        console.log("xxxxxxxxxxxxxxxxxxxxxxx",list?.data?.user);
        if(list?.status === 200){
         yield put(FetchCustomerList(list?.data?.user))
        }else{

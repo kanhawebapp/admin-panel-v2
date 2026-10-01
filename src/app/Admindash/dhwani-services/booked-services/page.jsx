@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -19,7 +20,6 @@ const STATUS_OPTIONS = [
     label: "Assigned",
     value: "ASSIGNED",
   },
-
 ];
 
 const getStatusStyle = (status) => {
@@ -66,32 +66,33 @@ const formatDate = (date) => {
   return parsedDate.toLocaleString("en-IN", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: "Asia/Kolkata",
   });
 };
 
 export default function ServiceBookingReport() {
   const [currentPage, setCurrentPage] = useState(1);
-const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+
+  // Separate state for manual refresh.
+  // This avoids using Apollo's loading state for the Refresh button.
+  const [refreshing, setRefreshing] = useState(false);
 
   const {
     data,
-    loading,
+    loading: queryLoading,
     error,
     refetch,
-  } = useQuery(
-    GET_ADMIN_SERVICE_BOOKING_REPORT,
-    {
-      variables: {
-        page: currentPage,
-        limit: PAGE_LIMIT,
-        bookingStatus: selectedStatus,
-      },
-      fetchPolicy: "network-only",
-    }
-  );
+  } = useQuery(GET_ADMIN_SERVICE_BOOKING_REPORT, {
+    variables: {
+      page: currentPage,
+      limit: PAGE_LIMIT,
+      bookingStatus: selectedStatus,
+    },
+    fetchPolicy: "network-only",
+  });
 
-  const report =
-    data?.getAdminServiceBookingReport;
+  const report = data?.getAdminServiceBookingReport;
 
   const bookings = report?.data || [];
 
@@ -112,12 +113,27 @@ const [selectedStatus, setSelectedStatus] = useState(null);
   // REFRESH
   // ==========================================
 
-  const handleRefresh = () => {
-    refetch({
-      page: currentPage,
-      limit: PAGE_LIMIT,
-      bookingStatus: selectedStatus,
-    });
+  const handleRefresh = async () => {
+    if (refreshing) {
+      return;
+    }
+
+    try {
+      setRefreshing(true);
+
+      await refetch({
+        page: currentPage,
+        limit: PAGE_LIMIT,
+        bookingStatus: selectedStatus,
+      });
+    } catch (refreshError) {
+      console.error(
+        "Failed to refresh service bookings:",
+        refreshError
+      );
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   // ==========================================
@@ -140,15 +156,16 @@ const [selectedStatus, setSelectedStatus] = useState(null);
     }
   };
 
+  // Apollo loading OR manual refresh
+  const isLoading = queryLoading || refreshing;
+
   return (
     <section className="w-full rounded-2xl bg-white p-4 shadow-sm sm:p-6">
-
       {/* ==========================================
           HEADER
       ========================================== */}
 
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-
         <div>
           <h2 className="text-xl font-semibold text-gray-800">
             Service Bookings
@@ -162,10 +179,10 @@ const [selectedStatus, setSelectedStatus] = useState(null);
         <button
           type="button"
           onClick={handleRefresh}
-          disabled={loading}
+          disabled={refreshing}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {loading ? "Refreshing..." : "Refresh"}
+          {refreshing ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
@@ -174,10 +191,8 @@ const [selectedStatus, setSelectedStatus] = useState(null);
       ========================================== */}
 
       <div className="mb-6 flex flex-wrap gap-2">
-
         {STATUS_OPTIONS.map((option) => {
-          const isActive =
-            selectedStatus === option.value;
+          const isActive = selectedStatus === option.value;
 
           return (
             <button
@@ -186,11 +201,12 @@ const [selectedStatus, setSelectedStatus] = useState(null);
               onClick={() =>
                 handleStatusChange(option.value)
               }
+              disabled={refreshing}
               className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
                 isActive
                   ? "border-purple-600 bg-purple-600 text-white"
                   : "border-gray-300 bg-white text-gray-600 hover:border-purple-400 hover:text-purple-600"
-              }`}
+              } disabled:cursor-not-allowed disabled:opacity-50`}
             >
               {option.label}
             </button>
@@ -203,7 +219,6 @@ const [selectedStatus, setSelectedStatus] = useState(null);
       ========================================== */}
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-
         <p className="text-sm text-gray-500">
           Total bookings:{" "}
           <span className="font-semibold text-gray-800">
@@ -225,9 +240,8 @@ const [selectedStatus, setSelectedStatus] = useState(null);
           ERROR
       ========================================== */}
 
-      {error && (
+      {error && !queryLoading && (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-
           <p>
             Unable to load service bookings.
           </p>
@@ -239,11 +253,11 @@ const [selectedStatus, setSelectedStatus] = useState(null);
           <button
             type="button"
             onClick={handleRefresh}
-            className="mt-2 font-semibold underline"
+            disabled={refreshing}
+            className="mt-2 font-semibold underline disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Try again
+            {refreshing ? "Retrying..." : "Try again"}
           </button>
-
         </div>
       )}
 
@@ -251,31 +265,24 @@ const [selectedStatus, setSelectedStatus] = useState(null);
           LOADING
       ========================================== */}
 
-      {loading && (
+      {queryLoading && (
         <div className="overflow-hidden rounded-xl border border-gray-200">
-
           <div className="animate-pulse">
-
-            {[1, 2, 3, 4, 5].map(
-              (item) => (
-                <div
-                  key={item}
-                  className="grid grid-cols-7 gap-4 border-b border-gray-100 p-4"
-                >
-
-                  {Array.from({
-                    length: 7,
-                  }).map((_, index) => (
+            {[1, 2, 3, 4, 5].map((item) => (
+              <div
+                key={item}
+                className="grid grid-cols-7 gap-4 border-b border-gray-100 p-4"
+              >
+                {Array.from({ length: 7 }).map(
+                  (_, index) => (
                     <div
                       key={index}
                       className="h-5 rounded bg-gray-200"
                     />
-                  ))}
-
-                </div>
-              )
-            )}
-
+                  )
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -284,17 +291,13 @@ const [selectedStatus, setSelectedStatus] = useState(null);
           DESKTOP TABLE
       ========================================== */}
 
-      {!loading &&
+      {!queryLoading &&
         !error &&
         bookings.length > 0 && (
           <div className="hidden overflow-x-auto rounded-xl border border-gray-200 md:block">
-
             <table className="w-full min-w-[1000px] text-left">
-
               <thead className="bg-gray-50">
-
                 <tr>
-
                   <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
                     #
                   </th>
@@ -322,97 +325,77 @@ const [selectedStatus, setSelectedStatus] = useState(null);
                   <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
                     Assigned To
                   </th>
-
                 </tr>
-
               </thead>
 
               <tbody className="divide-y divide-gray-100">
+                {bookings.map((booking, index) => (
+                  <tr
+                    key={booking.id}
+                    className="transition hover:bg-gray-50"
+                  >
+                    {/* NUMBER */}
 
-                {bookings.map(
-                  (booking, index) => (
-                    <tr
-                      key={booking.id}
-                      className="transition hover:bg-gray-50"
-                    >
+                    <td className="px-4 py-4 text-sm text-gray-500">
+                      {(currentPage - 1) *
+                        PAGE_LIMIT +
+                        index +
+                        1}
+                    </td>
 
-                      {/* NUMBER */}
+                    {/* USER */}
 
-                      <td className="px-4 py-4 text-sm text-gray-500">
-                        {(currentPage - 1) *
-                          PAGE_LIMIT +
-                          index +
-                          1}
-                      </td>
+                    <td className="px-4 py-4">
+                      <div className="font-medium text-gray-800">
+                        {booking.userName || "-"}
+                      </div>
+                    </td>
 
-                      {/* USER */}
+                    {/* MOBILE */}
 
-                      <td className="px-4 py-4">
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {booking.userMobile || "-"}
+                    </td>
 
-                        <div className="font-medium text-gray-800">
-                          {booking.userName ||
-                            "-"}
-                        </div>
+                    {/* SERVICE */}
 
-                      </td>
+                    <td className="px-4 py-4">
+                      <div className="font-medium text-gray-800">
+                        {booking.serviceName || "-"}
+                      </div>
+                    </td>
 
-                      {/* MOBILE */}
+                    {/* STATUS */}
 
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {booking.userMobile ||
-                          "-"}
-                      </td>
-
-                      {/* SERVICE */}
-
-                      <td className="px-4 py-4">
-
-                        <div className="font-medium text-gray-800">
-                          {booking.serviceName ||
-                            "-"}
-                        </div>
-
-                      </td>
-
-                      {/* STATUS */}
-
-                      <td className="px-4 py-4">
-
-                        <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                            booking.bookingStatus
-                          )}`}
-                        >
-                          {formatStatus(
-                            booking.bookingStatus
-                          )}
-                        </span>
-
-                      </td>
-
-                      {/* BOOKING DATE */}
-
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {formatDate(
-                          booking.bookingDate
+                    <td className="px-4 py-4">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                          booking.bookingStatus
+                        )}`}
+                      >
+                        {formatStatus(
+                          booking.bookingStatus
                         )}
-                      </td>
+                      </span>
+                    </td>
 
-                      {/* ASSIGNED TO */}
+                    {/* BOOKING DATE */}
 
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {booking.assignedTo ||
-                          "-"}
-                      </td>
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {formatDate(
+                        booking.bookingDate
+                      )}
+                    </td>
 
-                    </tr>
-                  )
-                )}
+                    {/* ASSIGNED TO */}
 
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {booking.assignedTo || "-"}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
-
             </table>
-
           </div>
         )}
 
@@ -420,33 +403,26 @@ const [selectedStatus, setSelectedStatus] = useState(null);
           MOBILE CARDS
       ========================================== */}
 
-      {!loading &&
+      {!queryLoading &&
         !error &&
         bookings.length > 0 && (
           <div className="space-y-3 md:hidden">
-
             {bookings.map((booking) => (
               <div
                 key={booking.id}
                 className="rounded-xl border border-gray-200 p-4"
               >
-
                 {/* SERVICE + STATUS */}
 
                 <div className="mb-3 flex items-start justify-between gap-3">
-
                   <div>
-
                     <h3 className="font-semibold text-gray-800">
-                      {booking.serviceName ||
-                        "-"}
+                      {booking.serviceName || "-"}
                     </h3>
 
                     <p className="mt-1 text-sm text-gray-500">
-                      {booking.userName ||
-                        "-"}
+                      {booking.userName || "-"}
                     </p>
-
                   </div>
 
                   <span
@@ -458,47 +434,38 @@ const [selectedStatus, setSelectedStatus] = useState(null);
                       booking.bookingStatus
                     )}
                   </span>
-
                 </div>
 
                 {/* DETAILS */}
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
-
                   {/* MOBILE */}
 
                   <div>
-
                     <p className="text-xs text-gray-400">
                       Mobile
                     </p>
 
                     <p className="mt-1 text-gray-700">
-                      {booking.userMobile ||
-                        "-"}
+                      {booking.userMobile || "-"}
                     </p>
-
                   </div>
 
                   {/* ASSIGNED */}
 
                   <div>
-
                     <p className="text-xs text-gray-400">
                       Assigned To
                     </p>
 
                     <p className="mt-1 text-gray-700">
-                      {booking.assignedTo ||
-                        "-"}
+                      {booking.assignedTo || "-"}
                     </p>
-
                   </div>
 
                   {/* DATE */}
 
                   <div className="col-span-2">
-
                     <p className="text-xs text-gray-400">
                       Booking Date
                     </p>
@@ -508,14 +475,10 @@ const [selectedStatus, setSelectedStatus] = useState(null);
                         booking.bookingDate
                       )}
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
             ))}
-
           </div>
         )}
 
@@ -523,11 +486,10 @@ const [selectedStatus, setSelectedStatus] = useState(null);
           EMPTY
       ========================================== */}
 
-      {!loading &&
+      {!queryLoading &&
         !error &&
         bookings.length === 0 && (
           <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
-
             <p className="text-sm font-medium text-gray-600">
               No service bookings found
             </p>
@@ -536,7 +498,6 @@ const [selectedStatus, setSelectedStatus] = useState(null);
               Try changing the booking status
               filter.
             </p>
-
           </div>
         )}
 
@@ -544,29 +505,22 @@ const [selectedStatus, setSelectedStatus] = useState(null);
           PAGINATION
       ========================================== */}
 
-      {!loading &&
+      {!queryLoading &&
         !error &&
         totalPages > 0 && (
           <div className="mt-6 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-
             <p className="text-sm text-gray-500">
-
               Page{" "}
-
               <span className="font-semibold text-gray-800">
                 {currentPage}
-              </span>
-
-              {" "}of{" "}
-
+              </span>{" "}
+              of{" "}
               <span className="font-semibold text-gray-800">
                 {totalPages}
               </span>
-
             </p>
 
             <div className="flex gap-2">
-
               {/* PREVIOUS */}
 
               <button
@@ -574,7 +528,8 @@ const [selectedStatus, setSelectedStatus] = useState(null);
                 onClick={handlePrevious}
                 disabled={
                   currentPage === 1 ||
-                  loading
+                  queryLoading ||
+                  refreshing
                 }
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -587,20 +542,18 @@ const [selectedStatus, setSelectedStatus] = useState(null);
                 type="button"
                 onClick={handleNext}
                 disabled={
-                  currentPage >=
-                    totalPages ||
-                  loading
+                  currentPage >= totalPages ||
+                  queryLoading ||
+                  refreshing
                 }
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
               </button>
-
             </div>
-
           </div>
         )}
-
     </section>
   );
 }
+

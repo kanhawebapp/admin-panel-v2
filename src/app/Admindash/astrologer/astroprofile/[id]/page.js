@@ -95,7 +95,6 @@ const canViewProfile =
   });
   const dashboardStats = statsData?.getAstrologerDashboardStats;
   useEffect(() => {
-    console.log("Dashboard Stats", dashboardStats);
   }, [dashboardStats]);
   const [availability, setAvailability] = useState({
     call: false,

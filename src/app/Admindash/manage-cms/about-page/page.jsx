@@ -187,7 +187,6 @@ export default function AboutPageAdmin() {
         },
       });
 
-      console.log(response);
 
       alert("About Page Updated");
     } catch (error) {
