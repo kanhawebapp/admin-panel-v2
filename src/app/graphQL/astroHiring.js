@@ -1321,3 +1321,34 @@ export const REJECT_REFUND_REQUEST = gql`
     }
   }
 `;
+
+
+
+export const GET_ADMIN_SERVICE_BOOKING_REPORT = gql`
+  query GetAdminServiceBookingReport(
+    $page: Int
+    $limit: Int
+    $bookingStatus: BookingStatus
+  ) {
+    getAdminServiceBookingReport(
+      page: $page
+      limit: $limit
+      bookingStatus: $bookingStatus
+    ) {
+      success
+      total
+      currentPage
+      totalPages
+      limit
+      data {
+        id
+        userName
+        userMobile
+        serviceName
+        bookingStatus
+        bookingDate
+        assignedTo
+      }
+    }
+  }
+`;
