@@ -19,14 +19,7 @@ const STATUS_OPTIONS = [
     label: "Assigned",
     value: "ASSIGNED",
   },
-  {
-    label: "Completed",
-    value: "COMPLETED",
-  },
-  {
-    label: "Cancelled",
-    value: "CANCELLED",
-  },
+
 ];
 
 const getStatusStyle = (status) => {
@@ -78,7 +71,7 @@ const formatDate = (date) => {
 
 export default function ServiceBookingReport() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedStatus, setSelectedStatus] = useState(null);
+const [selectedStatus, setSelectedStatus] = useState(null);
 
   const {
     data,
@@ -91,7 +84,7 @@ export default function ServiceBookingReport() {
       variables: {
         page: currentPage,
         limit: PAGE_LIMIT,
-        //bookingStatus: selectedStatus,
+        bookingStatus: selectedStatus,
       },
       fetchPolicy: "network-only",
     }

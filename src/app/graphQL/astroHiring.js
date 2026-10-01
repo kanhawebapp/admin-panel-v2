@@ -1328,12 +1328,12 @@ export const GET_ADMIN_SERVICE_BOOKING_REPORT = gql`
   query GetAdminServiceBookingReport(
     $page: Int
     $limit: Int
-    #$bookingStatus: BookingStatus
+    $bookingStatus: String
   ) {
     getAdminServiceBookingReport(
       page: $page
       limit: $limit
-      #bookingStatus: $bookingStatus
+      bookingStatus: $bookingStatus
     ) {
       success
       total
