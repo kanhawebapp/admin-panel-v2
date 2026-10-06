@@ -13,6 +13,8 @@ export const GET_COUPONS = gql`
       percentage
       maxDiscount
       redeemLimit
+      minOrderAmount
+      couponCount
       startDate
       endDate
     }

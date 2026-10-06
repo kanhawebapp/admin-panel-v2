@@ -254,6 +254,15 @@ export default function CouponMain() {
         header: "Type",
         render: (row) => <span className="font-medium">{row.type}</span>,
       },
+         {
+        header: "Applicable",
+        render: (row) => <span className="font-medium">{row.applicable}</span>,
+      },
+            {
+        header: "Redem Limit",
+        render: (row) => <span className="font-medium">{row.redeemLimit}</span>,
+      },
+     
 
       {
         header: "Discount %",
@@ -265,20 +274,7 @@ export default function CouponMain() {
         render: (row) => row.couponCount ?? 0,
       },
 
-      {
-        header: "Visibility",
-        render: (row) => (
-          <span
-            className={`px-2 py-1 rounded text-xs ${
-              row.visibility === "VISIBLE"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}
-          >
-            {row.visibility}
-          </span>
-        ),
-      },
+    
       {
         header: "Start Date",
         render: (row) =>
