@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -25,7 +24,7 @@ const STATUS_OPTIONS = [
 const getStatusStyle = (status) => {
   switch (status) {
     case "ASSIGNED":
-      return "bg-blue-100 text-blue-700";
+      return "bg-green-100 text-green-700";
 
     case "PENDING":
       return "bg-yellow-100 text-yellow-700";
@@ -47,10 +46,7 @@ const formatStatus = (status) => {
   return status
     .toLowerCase()
     .split("_")
-    .map(
-      (word) =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-    )
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
 
@@ -74,8 +70,6 @@ export default function ServiceBookingReport() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStatus, setSelectedStatus] = useState(null);
 
-  // Separate state for manual refresh.
-  // This avoids using Apollo's loading state for the Refresh button.
   const [refreshing, setRefreshing] = useState(false);
 
   const {
@@ -127,10 +121,7 @@ export default function ServiceBookingReport() {
         bookingStatus: selectedStatus,
       });
     } catch (refreshError) {
-      console.error(
-        "Failed to refresh service bookings:",
-        refreshError
-      );
+      console.error("Failed to refresh service bookings:", refreshError);
     } finally {
       setRefreshing(false);
     }
@@ -198,9 +189,7 @@ export default function ServiceBookingReport() {
             <button
               key={option.label}
               type="button"
-              onClick={() =>
-                handleStatusChange(option.value)
-              }
+              onClick={() => handleStatusChange(option.value)}
               disabled={refreshing}
               className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
                 isActive
@@ -221,17 +210,13 @@ export default function ServiceBookingReport() {
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-gray-500">
           Total bookings:{" "}
-          <span className="font-semibold text-gray-800">
-            {total}
-          </span>
+          <span className="font-semibold text-gray-800">{total}</span>
         </p>
 
         <p className="text-sm text-gray-500">
           Filter:{" "}
           <span className="font-semibold text-gray-800">
-            {selectedStatus
-              ? formatStatus(selectedStatus)
-              : "All Statuses"}
+            {selectedStatus ? formatStatus(selectedStatus) : "All Statuses"}
           </span>
         </p>
       </div>
@@ -242,13 +227,9 @@ export default function ServiceBookingReport() {
 
       {error && !queryLoading && (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-          <p>
-            Unable to load service bookings.
-          </p>
+          <p>Unable to load service bookings.</p>
 
-          <p className="mt-1 text-xs text-red-500">
-            {error.message}
-          </p>
+          <p className="mt-1 text-xs text-red-500">{error.message}</p>
 
           <button
             type="button"
@@ -273,14 +254,9 @@ export default function ServiceBookingReport() {
                 key={item}
                 className="grid grid-cols-7 gap-4 border-b border-gray-100 p-4"
               >
-                {Array.from({ length: 7 }).map(
-                  (_, index) => (
-                    <div
-                      key={index}
-                      className="h-5 rounded bg-gray-200"
-                    />
-                  )
-                )}
+                {Array.from({ length: 7 }).map((_, index) => (
+                  <div key={index} className="h-5 rounded bg-gray-200" />
+                ))}
               </div>
             ))}
           </div>
@@ -291,269 +267,245 @@ export default function ServiceBookingReport() {
           DESKTOP TABLE
       ========================================== */}
 
-      {!queryLoading &&
-        !error &&
-        bookings.length > 0 && (
-          <div className="hidden overflow-x-auto rounded-xl border border-gray-200 md:block">
-            <table className="w-full min-w-[1000px] text-left">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
-                    #
-                  </th>
+      {!queryLoading && !error && bookings.length > 0 && (
+        <div className="hidden overflow-x-auto rounded-xl border border-gray-200 md:block">
+          <table className="w-full min-w-[1000px] text-left">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  #
+                </th>
 
-                  <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
-                    User
-                  </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  User
+                </th>
 
-                  <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
-                    Mobile
-                  </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Service
+                </th>
 
-                  <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
-                    Service
-                  </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Status
+                </th>
 
-                  <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
-                    Status
-                  </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Booking Date
+                </th>
 
-                  <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
-                    Booking Date
-                  </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Assigned To
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Service Amount
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Coupon
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Final Amount
+                </th>
+              </tr>
+            </thead>
 
-                  <th className="px-4 py-3 text-xs font-semibold uppercase text-gray-500">
-                    Assigned To
-                  </th>
-                </tr>
-              </thead>
+            <tbody className="divide-y divide-gray-100">
+              {bookings.map((booking, index) => (
+                <tr
+                  key={booking.id}
+                  className="transition text-xs hover:bg-gray-50"
+                >
+               
 
-              <tbody className="divide-y divide-gray-100">
-                {bookings.map((booking, index) => (
-                  <tr
-                    key={booking.id}
-                    className="transition hover:bg-gray-50"
-                  >
-                    {/* NUMBER */}
+                  <td className="px-4 py-4 text-xs text-gray-500">
+                    {(currentPage - 1) * PAGE_LIMIT + index + 1}
+                  </td>
 
-                    <td className="px-4 py-4 text-sm text-gray-500">
-                      {(currentPage - 1) *
-                        PAGE_LIMIT +
-                        index +
-                        1}
-                    </td>
+       
 
-                    {/* USER */}
-
-                    <td className="px-4 py-4">
-                      <div className="font-medium text-gray-800">
+                  <td className="px-4 py-4">
+                    <div className="font-medium flex flex-col text-gray-800">
+                      <span className="font-semibold">
+                        {" "}
                         {booking.userName || "-"}
-                      </div>
-                    </td>
-
-                    {/* MOBILE */}
-
-                    <td className="px-4 py-4 text-sm text-gray-600">
-                      {booking.userMobile || "-"}
-                    </td>
-
-                    {/* SERVICE */}
-
-                    <td className="px-4 py-4">
-                      <div className="font-medium text-gray-800">
-                        {booking.serviceName || "-"}
-                      </div>
-                    </td>
-
-                    {/* STATUS */}
-
-                    <td className="px-4 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                          booking.bookingStatus
-                        )}`}
-                      >
-                        {formatStatus(
-                          booking.bookingStatus
-                        )}
                       </span>
-                    </td>
+                      <span className="text-[10px]">
+                        {" "}
+                        {booking.userMobile || "-"}
+                      </span>
+                    </div>
+                  </td>
 
-                    {/* BOOKING DATE */}
+                  <td className="px-4 py-4">
+                    <div className="font-medium text-gray-800">
+                      {booking.serviceName || "-"}
+                    </div>
+                  </td>
 
-                    <td className="px-4 py-4 text-sm text-gray-600">
-                      {formatDate(
-                        booking.bookingDate
-                      )}
-                    </td>
+            
 
-                    {/* ASSIGNED TO */}
+                  <td className="px-4 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-[10px] ${getStatusStyle(
+                        booking.bookingStatus,
+                      )}`}
+                    >
+                      {formatStatus(booking.bookingStatus)}
+                    </span>
+                  </td>
 
-                    <td className="px-4 py-4 text-sm text-gray-600">
-                      {booking.assignedTo || "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  <td className="px-4 py-4 text-xs text-gray-600">
+                    {formatDate(booking.bookingDate)}
+                  </td>
+
+                  <td className="px-4 py-4 text-xs text-gray-600">
+                    {booking.assignedTo || "-"}
+                  </td>
+                  <td className="px-4 py-4 text-xs text-gray-600">
+                    {booking.amount || "-"}
+                  </td>
+                  <td className="px-4  py-4  text-xs text-gray-600">
+                     <div className="text-xs flex flex-col text-gray-800">
+                    <span> {booking.couponName || "-"}</span>
+                    <span> {booking.couponType || "-"}</span></div>
+                  </td>
+                  <td className="px-4 flex flex-col py-4 text-[10px] text-gray-600">
+                    <span>
+                      Discount/Cashback :
+                      {booking.discountAmount || booking.cashbackAmount || "-"}
+                    </span>
+
+                    <span>User Paid :{booking.finalPaidAmount || "-"}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* ==========================================
           MOBILE CARDS
       ========================================== */}
 
-      {!queryLoading &&
-        !error &&
-        bookings.length > 0 && (
-          <div className="space-y-3 md:hidden">
-            {bookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-xl border border-gray-200 p-4"
-              >
-                {/* SERVICE + STATUS */}
+      {!queryLoading && !error && bookings.length > 0 && (
+        <div className="space-y-3 md:hidden">
+          {bookings.map((booking) => (
+            <div
+              key={booking.id}
+              className="rounded-xl border border-gray-200 p-4"
+            >
+              {/* SERVICE + STATUS */}
 
-                <div className="mb-3 flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-semibold text-gray-800">
-                      {booking.serviceName || "-"}
-                    </h3>
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-semibold text-gray-800">
+                    {booking.serviceName || "-"}
+                  </h3>
 
-                    <p className="mt-1 text-sm text-gray-500">
-                      {booking.userName || "-"}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                      booking.bookingStatus
-                    )}`}
-                  >
-                    {formatStatus(
-                      booking.bookingStatus
-                    )}
-                  </span>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {booking.userName || "-"}
+                  </p>
                 </div>
 
-                {/* DETAILS */}
+                <span
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                    booking.bookingStatus,
+                  )}`}
+                >
+                  {formatStatus(booking.bookingStatus)}
+                </span>
+              </div>
 
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  {/* MOBILE */}
+              {/* DETAILS */}
 
-                  <div>
-                    <p className="text-xs text-gray-400">
-                      Mobile
-                    </p>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                {/* MOBILE */}
 
-                    <p className="mt-1 text-gray-700">
-                      {booking.userMobile || "-"}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-xs text-gray-400">Mobile</p>
 
-                  {/* ASSIGNED */}
+                  <p className="mt-1 text-gray-700">
+                    {booking.userMobile || "-"}
+                  </p>
+                </div>
 
-                  <div>
-                    <p className="text-xs text-gray-400">
-                      Assigned To
-                    </p>
+                {/* ASSIGNED */}
 
-                    <p className="mt-1 text-gray-700">
-                      {booking.assignedTo || "-"}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-xs text-gray-400">Assigned To</p>
 
-                  {/* DATE */}
+                  <p className="mt-1 text-gray-700">
+                    {booking.assignedTo || "-"}
+                  </p>
+                </div>
 
-                  <div className="col-span-2">
-                    <p className="text-xs text-gray-400">
-                      Booking Date
-                    </p>
+                {/* DATE */}
 
-                    <p className="mt-1 text-gray-700">
-                      {formatDate(
-                        booking.bookingDate
-                      )}
-                    </p>
-                  </div>
+                <div className="col-span-2">
+                  <p className="text-xs text-gray-400">Booking Date</p>
+
+                  <p className="mt-1 text-gray-700">
+                    {formatDate(booking.bookingDate)}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ==========================================
           EMPTY
       ========================================== */}
 
-      {!queryLoading &&
-        !error &&
-        bookings.length === 0 && (
-          <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
-            <p className="text-sm font-medium text-gray-600">
-              No service bookings found
-            </p>
+      {!queryLoading && !error && bookings.length === 0 && (
+        <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
+          <p className="text-sm font-medium text-gray-600">
+            No service bookings found
+          </p>
 
-            <p className="mt-1 text-xs text-gray-400">
-              Try changing the booking status
-              filter.
-            </p>
-          </div>
-        )}
+          <p className="mt-1 text-xs text-gray-400">
+            Try changing the booking status filter.
+          </p>
+        </div>
+      )}
 
       {/* ==========================================
           PAGINATION
       ========================================== */}
 
-      {!queryLoading &&
-        !error &&
-        totalPages > 0 && (
-          <div className="mt-6 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-gray-500">
-              Page{" "}
-              <span className="font-semibold text-gray-800">
-                {currentPage}
-              </span>{" "}
-              of{" "}
-              <span className="font-semibold text-gray-800">
-                {totalPages}
-              </span>
-            </p>
+      {!queryLoading && !error && totalPages > 0 && (
+        <div className="mt-6 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-500">
+            Page{" "}
+            <span className="font-semibold text-gray-800">{currentPage}</span>{" "}
+            of <span className="font-semibold text-gray-800">{totalPages}</span>
+          </p>
 
-            <div className="flex gap-2">
-              {/* PREVIOUS */}
+          <div className="flex gap-2">
+            {/* PREVIOUS */}
 
-              <button
-                type="button"
-                onClick={handlePrevious}
-                disabled={
-                  currentPage === 1 ||
-                  queryLoading ||
-                  refreshing
-                }
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Previous
-              </button>
+            <button
+              type="button"
+              onClick={handlePrevious}
+              disabled={currentPage === 1 || queryLoading || refreshing}
+              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Previous
+            </button>
 
-              {/* NEXT */}
+            {/* NEXT */}
 
-              <button
-                type="button"
-                onClick={handleNext}
-                disabled={
-                  currentPage >= totalPages ||
-                  queryLoading ||
-                  refreshing
-                }
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Next
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={currentPage >= totalPages || queryLoading || refreshing}
+              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+            </button>
           </div>
-        )}
+        </div>
+      )}
     </section>
   );
 }
-

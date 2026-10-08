@@ -1348,6 +1348,12 @@ export const GET_ADMIN_SERVICE_BOOKING_REPORT = gql`
         bookingStatus
         bookingDate
         assignedTo
+        amount 
+        couponName 
+        couponType 
+        discountAmount
+        cashbackAmount 
+        finalPaidAmount
       }
     }
   }
