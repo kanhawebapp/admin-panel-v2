@@ -487,7 +487,7 @@ export default function PujaServicesAdmin() {
   if (error) {
     return <div className="p-10 text-red-500">Error: {error.message}</div>;
   }
-  const backendUrl = new URL(process.env.NEXT_PUBLIC_GRAPHQL_URL).origin;
+   const backendUrl = new URL(process.env.NEXT_PUBLIC_API_BASE_URL).origin;
 
   return (
     <div className="max-w-7xl mx-auto p-6">
