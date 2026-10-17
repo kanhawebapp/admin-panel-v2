@@ -812,14 +812,11 @@ export default function PujaServicesAdmin() {
                 <tr key={puja.id} className="border-b">
                   <td className="p-3">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={`${backendUrl}${puja.image.replace("/adminAuth/uploads/", "/uploads/")}`}
-                        alt={puja.title}
-                        className="w-16 h-12 object-cover rounded-lg"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = "/placeholder.png";
-                        }}
+                       <img
+                        src={`${backendUrl}${puja.image}`}
+                        alt={puja.title || "Puja image"}
+                        className="w-full h-full object-cover"
+                        onError={() => setImageError(true)}
                       />
 
                       <div>
