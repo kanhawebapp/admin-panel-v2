@@ -382,14 +382,13 @@ export default function PujaServicesAdmin() {
           const uploadData = new FormData();
           uploadData.append("image", imageFile);
 
-          const graphqlUrl = process.env.NEXT_PUBLIC_GRAPHQL_URL;
+          const graphqlUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
           const backendUrl = new URL(graphqlUrl).origin;
 
-          const response = await fetch(`${backendUrl}/api/puja-image`, {
+          const response = await fetch(`${backendUrl}/adminAuth/api/puja-image`, {
             method: "POST",
             body: uploadData,
           });
-
           const result = await response.json();
 
           if (!response.ok || !result.url) {
