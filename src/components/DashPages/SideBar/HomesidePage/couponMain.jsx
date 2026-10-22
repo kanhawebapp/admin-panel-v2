@@ -438,6 +438,8 @@ export default function CouponMain() {
                   >
                     <option value="recharge">Recharge</option>
                     <option value="services">Services</option>
+                                        <option value="puja">Puja</option>
+
                   </CustomDropdown>
                   {errors.applicable && (
                     <p className="text-xs text-red-500">{errors.applicable}</p>
