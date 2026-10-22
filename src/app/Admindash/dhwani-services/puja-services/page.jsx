@@ -28,6 +28,9 @@ const GET_PUJA_SERVICES = gql`
       mantraOptions {
         id
         name
+        originalPrice
+        offerPrice
+        sortOrder
       }
 
       faqs {
@@ -63,7 +66,7 @@ const CREATE_PUJA_SERVICE = gql`
     $discount: Float
     $customersCount: Int
     $rating: Float
-    $mantraOptions: [String!]
+    $mantraOptions: [PujaMantraOptionInput!]!
     $faqs: [PujaFAQInput!]
   ) {
     createPujaService(
@@ -110,7 +113,7 @@ const UPDATE_PUJA_SERVICE = gql`
     $discount: Float
     $customersCount: Int
     $rating: Float
-    $mantraOptions: [String!]
+    $mantraOptions: [PujaMantraOptionInput!]!
     $faqs: [PujaFAQInput!]
   ) {
     updatePujaService(
@@ -170,9 +173,9 @@ const initialForm = {
   mrp: "",
   discount: "",
   customersCount: 0,
-  rating: 0,
+  rating: 5,
 
-  mantraOptions: [""],
+  mantraOptions: [{ name: "", originalPrice: "", offerPrice: "", sortOrder: 1 }],
 
   faqs: [
     {
@@ -245,28 +248,56 @@ export default function PujaServicesAdmin() {
   const addMantra = () => {
     setForm((prev) => ({
       ...prev,
-      mantraOptions: [...prev.mantraOptions, ""],
+      mantraOptions: [
+        ...prev.mantraOptions,
+        {
+          name: "",
+          originalPrice: "",
+          offerPrice: "",
+          sortOrder: prev.mantraOptions.length + 1,
+        },
+      ],
     }));
   };
 
-  const updateMantra = (index, value) => {
-    const updated = [...form.mantraOptions];
+  const updateMantra = (index, field, value) => {
+    setForm((prev) => {
+      const updated = prev.mantraOptions.map((mantra, i) =>
+        i === index ? { ...mantra, [field]: value } : mantra,
+      );
+      const firstMantra = updated[0];
 
-    updated[index] = value;
-
-    setForm((prev) => ({
-      ...prev,
-      mantraOptions: updated,
-    }));
+      return {
+        ...prev,
+        mantraOptions: updated,
+        // Keep the existing Puja-level fields aligned with the first option.
+        ...(firstMantra && index === 0 && field === "offerPrice"
+          ? { price: value }
+          : {}),
+        ...(firstMantra && index === 0 && field === "originalPrice"
+          ? { mrp: value }
+          : {}),
+      };
+    });
   };
 
   const removeMantra = (index) => {
-    const updated = form.mantraOptions.filter((_, i) => i !== index);
+    setForm((prev) => {
+      const updated = prev.mantraOptions
+        .filter((_, i) => i !== index)
+        .map((mantra, i) => ({ ...mantra, sortOrder: i + 1 }));
+      const mantraOptions = updated.length
+        ? updated
+        : [{ name: "", originalPrice: "", offerPrice: "", sortOrder: 1 }];
+      const firstMantra = mantraOptions[0];
 
-    setForm((prev) => ({
-      ...prev,
-      mantraOptions: updated.length > 0 ? updated : [""],
-    }));
+      return {
+        ...prev,
+        mantraOptions,
+        price: firstMantra.offerPrice,
+        mrp: firstMantra.originalPrice,
+      };
+    });
   };
 
   const addFAQ = () => {
@@ -344,11 +375,18 @@ export default function PujaServicesAdmin() {
       discount: puja.discount || "",
       customersCount: puja.customersCount || 0,
 
-      rating: puja.rating || 0,
+      rating: puja.rating || 5,
 
       mantraOptions: puja.mantraOptions?.length
-        ? puja.mantraOptions.map((item) => item.name)
-        : [""],
+        ? [...puja.mantraOptions]
+            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+            .map((item, index) => ({
+              name: item.name || "",
+              originalPrice: item.originalPrice ?? (index === 0 ? puja.mrp : "") ?? "",
+              offerPrice: item.offerPrice ?? (index === 0 ? puja.price : "") ?? "",
+              sortOrder: item.sortOrder ?? index + 1,
+            }))
+        : [{ name: "", originalPrice: puja.mrp || "", offerPrice: puja.price || "", sortOrder: 1 }],
 
       faqs: puja.faqs?.length
         ? puja.faqs.map((faq) => ({
@@ -420,7 +458,14 @@ export default function PujaServicesAdmin() {
         discount: form.discount === "" ? null : Number(form.discount),
         customersCount: Number(form.customersCount) || 0,
         rating: Number(form.rating) || 0,
-        mantraOptions: form.mantraOptions.filter((item) => item.trim() !== ""),
+        mantraOptions: form.mantraOptions
+          .filter((item) => item.name.trim() !== "")
+          .map((item, index) => ({
+            name: item.name.trim(),
+            originalPrice: Number(item.originalPrice),
+            offerPrice: Number(item.offerPrice),
+            sortOrder: Number(item.sortOrder) || index + 1,
+          })),
         faqs: form.faqs.filter(
           (faq) => faq.question.trim() !== "" && faq.answer.trim() !== "",
         ),
@@ -598,7 +643,7 @@ export default function PujaServicesAdmin() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Pricing</h3>
 
-            <div className="grid grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
               <input
                 type="number"
                 className="input"
@@ -635,6 +680,21 @@ export default function PujaServicesAdmin() {
                 value={form.customersCount}
                 onChange={handleChange}
               />
+
+              <select
+                className="input"
+                value={form.rating}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, rating: Number(e.target.value) }))
+                }
+                aria-label="Puja rating"
+              >
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <option key={r} value={r}>
+                    {r} Star
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -666,21 +726,62 @@ export default function PujaServicesAdmin() {
 
             <div className="space-y-3">
               {form.mantraOptions.map((mantra, index) => (
-                <div key={index} className="flex gap-3">
-                  <input
-                    className="input flex-1"
-                    placeholder="Example: 108 Mala Mantra Ahuti"
-                    value={mantra}
-                    onChange={(e) => updateMantra(index, e.target.value)}
-                  />
+                <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 border rounded-xl p-4">
+                  <div className="md:col-span-4">
+                    <label className="block text-sm font-medium mb-1">Mantra Jaap Name</label>
+                    <input
+                      className="input"
+                      placeholder="Example: 108 Mala Mantra Ahuti"
+                      value={mantra.name}
+                      onChange={(e) => updateMantra(index, "name", e.target.value)}
+                    />
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => removeMantra(index)}
-                    className="bg-red-500 text-white text-xs px-3 py-1 rounded-full"
-                  >
-                    Remove
-                  </button>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-1">Original Price (₹)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      className="input"
+                      placeholder="e.g. 600"
+                      value={mantra.originalPrice}
+                      onChange={(e) => updateMantra(index, "originalPrice", e.target.value)}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-1">Offer Price (₹)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      className="input"
+                      placeholder="e.g. 500"
+                      value={mantra.offerPrice}
+                      onChange={(e) => updateMantra(index, "offerPrice", e.target.value)}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-1">Sort Order</label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="input"
+                      placeholder="1"
+                      value={mantra.sortOrder}
+                      onChange={(e) => updateMantra(index, "sortOrder", e.target.value)}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2 flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => removeMantra(index)}
+                      className="bg-red-500 text-white text-xs px-3 py-2 rounded-full w-full"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
