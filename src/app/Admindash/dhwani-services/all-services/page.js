@@ -425,7 +425,7 @@ export default function DhwaniServicesAdmin() {
               >
                 {cat.image && (
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${cat.image}`}
+                    src={`${cat.image}`}
                     alt={cat.name}
                     width={250}
                     height={150}
@@ -482,19 +482,18 @@ export default function DhwaniServicesAdmin() {
 
                   {item.image && (
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${item.image}`}
+                      src={`${item.image}`}
                       alt=""
                       width={300}
                       height={150}
                       className="h-32 w-full object-cover rounded mb-2"
                     />
                   )}
+                      <p className="text-sm">Category: {item.category?.name || "None"}</p>
                 </div>
 
                 <div className="p-2">
-                  <p>{item.description}</p>
 
-                  <p>Category: {item.category?.name || "None"}</p>
                   <div className="mt-2 overflow-y-auto h-16 text-xs">
                     {item.astrologerMappings?.map((m) => (
                       <p key={m.astrologer.displayName}>

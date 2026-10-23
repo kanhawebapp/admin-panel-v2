@@ -246,15 +246,15 @@ export default function PujaBookingReport() {
 
                     <td className="px-4 py-4">
                       <div className="font-medium text-gray-800">
-                        {booking.user?.name || "-"}
+                        {booking.userName || "-"}
                       </div>
                       <div className="mt-1 text-xs text-gray-400">
-                        ID: {booking.userId}
+                        ID: {booking.userId.slice(0,8)}
                       </div>
                     </td>
 
                     <td className="px-4 py-4 font-medium text-gray-800">
-                      {booking.puja?.title || "-"}
+                      {booking.pujaName || "-"}
                     </td>
 
                     <td className="px-4 py-4 text-gray-600">
@@ -286,7 +286,7 @@ export default function PujaBookingReport() {
                     </td>
 
                     <td className="px-4 py-4 text-xs text-gray-600">
-                      {formatDate(booking.createdAt)}
+                      {formatDate(booking.bookingDate)}
                     </td>
                   </tr>
                 ))}
