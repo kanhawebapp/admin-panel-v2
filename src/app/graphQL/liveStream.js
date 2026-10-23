@@ -129,3 +129,33 @@ export const GET_RUNNING_LIVE_STREAMS = gql`
     }
   }
 `;
+export const GET_ENDED_LIVE_STREAMS = gql`
+  query GetEndedLiveStreams($page: Int, $limit: Int) {
+    getEndedLiveStreams(page: $page, limit: $limit) {
+      success
+      total
+      currentPage
+      totalPages
+      limit
+
+      data {
+        id
+        astrologerId
+        title
+        channelName
+        chatRoomId
+        status
+        scheduledAt
+        scheduledEndAt
+        createdAt
+        startedAt
+        endedAt
+        totalViews
+        astrologer {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
