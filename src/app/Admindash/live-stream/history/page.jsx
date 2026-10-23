@@ -15,6 +15,7 @@ export default function EndedLiveStreams() {
   );
 
   if (loading) return <p>Loading ended livestreams...</p>;
+console.log("xxxx");
 
   if (error) {
     return <p>Failed to load: {error.message}</p>;
