@@ -9,10 +9,11 @@ export const GET_RECHARGE_PACKS = gql`
       price
       talktime
       coins
-validityDays
+      validityDays
       isActive
       createdAt
       hideAfterFirstRecharge
+      isFirstTimeOffer
     }
   }
 `;
@@ -25,7 +26,7 @@ export const CREATE_RECHARGE_PACK = gql`
       price
       talktime
       coins
-validityDays
+      validityDays
       isActive
     }
   }
