@@ -66,3 +66,74 @@ export const GET_PAYMENT_REPORTS = gql`
 `;
 
 
+export const GET_SERVICE_BANK_PAYMENT_DETAILS = gql`
+  query GetServiceBankPaymentDetails(
+    $page: Int!
+    $limit: Int!
+    $serviceType: String!
+    $status: String!
+  ) {
+    getServiceBankPaymentDetails(
+      page: $page
+      limit: $limit
+      serviceType: $serviceType
+      status: $status
+    ) {
+      success
+      message
+
+      data {
+        id
+        userId
+        serviceType
+        serviceId
+        bookingId
+        amount
+        provider
+        razorpayOrderId
+        razorpayPaymentId
+        status
+        invoiceNo
+        taxableAmount
+        gstRate
+        cgst
+        sgst
+        igst
+        totalTax
+        totalAmount
+        pgChargeRate
+        pgCharge
+        pgIgst
+        pgTotal
+        receivableAmount
+        country
+        state
+        city
+        platform
+        couponId
+        discount
+        cashback
+        createdAt
+        updatedAt
+      }
+
+      pagination {
+        totalRecords
+        totalPages
+        currentPage
+        limit
+        totalAmount
+        totalTaxableAmount
+        totalTax
+        totalPgCharge
+        totalPgIgst
+        totalPgAmount
+        totalReceivableAmount
+        totalDiscount
+        totalCashback
+      }
+    }
+  }
+`;
+
+
