@@ -86,7 +86,7 @@ export const GET_SERVICE_BANK_PAYMENT_DETAILS = gql`
         id
         userId
         serviceType
-        serviceId
+        serviceName
         bookingId
         amount
         provider
