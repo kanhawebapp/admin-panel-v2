@@ -34,7 +34,7 @@ export default function EndedLiveStreams() {
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3">Title</th>
-              <th className="p-3">Astrologer ID</th>
+              <th className="p-3">Astrologer</th>
               <th className="p-3">Status</th>
               <th className="p-3">Views</th>
               <th className="p-3">Started At</th>
@@ -46,7 +46,7 @@ export default function EndedLiveStreams() {
             {streams.map((stream) => (
               <tr key={stream.id} className="border-t">
                 <td className="p-3">{stream.title}</td>
-                <td className="p-3">{stream.astrologerId}</td>
+                <td className="p-3">{stream.astrologer.displayName}</td>
                 <td className="p-3">{stream.status}</td>
                 <td className="p-3">{stream.totalViews ?? 0}</td>
                 <td className="p-3">

@@ -71,6 +71,7 @@ export const ADMIN_DELETE_SCHEDULED_LIVE = gql`
   }
 `;
 
+
 export const GET_LIVE_GIFT_TRANSACTIONS = gql`
   query GetLiveGiftTransactions(
     $page: Int
@@ -84,16 +85,20 @@ export const GET_LIVE_GIFT_TRANSACTIONS = gql`
     ) {
       transactions {
         id
-        streamId
         senderId
+        userName
         astrologerId
+        astrologerName
+        streamId
         giftId
+        giftName
+        giftImage
+        giftAmount
         quantity
         totalCoins
         status
         createdAt
       }
-
       totalRecords
       totalPages
       currentPage
@@ -102,6 +107,7 @@ export const GET_LIVE_GIFT_TRANSACTIONS = gql`
     }
   }
 `;
+
 
 export const GET_RUNNING_LIVE_STREAMS = gql`
   query GetRunningLiveStreams {
@@ -154,6 +160,7 @@ export const GET_ENDED_LIVE_STREAMS = gql`
         astrologer {
           id
           name
+          displayName
         }
       }
     }

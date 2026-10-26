@@ -7,10 +7,6 @@ import DataTable from "@/components/utils/DataTable";
 
 import { GET_LIVE_GIFT_TRANSACTIONS } from "@/app/graphQL/liveStream";
 
-/* =====================================================
-   CONSTANTS
-===================================================== */
-
 const DEFAULT_LIMIT = 20;
 
 const EMPTY_FILTERS = {
@@ -22,10 +18,6 @@ const EMPTY_FILTERS = {
   startDate: "",
   endDate: "",
 };
-
-/* =====================================================
-   DATE HELPERS
-===================================================== */
 
 function formatDate(dateValue) {
   if (!dateValue) return "N/A";
@@ -46,19 +38,11 @@ function formatDate(dateValue) {
   });
 }
 
-/* =====================================================
-   NUMBER FORMATTER
-===================================================== */
-
 function formatNumber(value) {
   return new Intl.NumberFormat("en-IN").format(
     Number(value) || 0
   );
 }
-
-/* =====================================================
-   SHORTEN UUID
-===================================================== */
 
 function shortenId(value, length = 12) {
   if (!value) return "N/A";
@@ -69,10 +53,6 @@ function shortenId(value, length = 12) {
 
   return `${value.slice(0, length)}...`;
 }
-
-/* =====================================================
-   STATUS BADGE
-===================================================== */
 
 function getStatusClass(status) {
   switch (status?.toUpperCase()) {
@@ -93,14 +73,7 @@ function getStatusClass(status) {
   }
 }
 
-/* =====================================================
-   MAIN COMPONENT
-===================================================== */
-
 export default function LiveGiftTransactionsAdminPage() {
-  /* =====================================================
-     FILTER FORM STATE
-  ===================================================== */
 
   const [filterForm, setFilterForm] = useState({
     ...EMPTY_FILTERS,
@@ -114,10 +87,6 @@ export default function LiveGiftTransactionsAdminPage() {
 
   const [filterError, setFilterError] = useState("");
 
-  /* =====================================================
-     QUERY VARIABLES
-  ===================================================== */
-
   const queryFilters = useMemo(() => {
     const filters = {};
 
@@ -129,10 +98,6 @@ export default function LiveGiftTransactionsAdminPage() {
 
     return filters;
   }, [activeFilters]);
-
-  /* =====================================================
-     GET LIVE GIFT TRANSACTIONS
-  ===================================================== */
 
   const {
     data,
@@ -161,17 +126,9 @@ export default function LiveGiftTransactionsAdminPage() {
 
   const totalCoins = result?.totalCoins ?? 0;
 
-  /* =====================================================
-     RESET PAGE WHEN FILTERS CHANGE
-  ===================================================== */
-
   useEffect(() => {
     setPage(1);
   }, [activeFilters, limit]);
-
-  /* =====================================================
-     HANDLE FILTER INPUT
-  ===================================================== */
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
@@ -181,10 +138,6 @@ export default function LiveGiftTransactionsAdminPage() {
       [name]: value,
     }));
   };
-
-  /* =====================================================
-     APPLY FILTERS
-  ===================================================== */
 
   const handleApplyFilters = (event) => {
     event.preventDefault();
@@ -202,7 +155,6 @@ export default function LiveGiftTransactionsAdminPage() {
 
       return;
     }
-
     const filters = {};
 
     Object.entries(filterForm).forEach(([key, value]) => {
@@ -215,10 +167,6 @@ export default function LiveGiftTransactionsAdminPage() {
     setActiveFilters(filters);
   };
 
-  /* =====================================================
-     CLEAR FILTERS
-  ===================================================== */
-
   const handleClearFilters = () => {
     setFilterError("");
 
@@ -229,10 +177,6 @@ export default function LiveGiftTransactionsAdminPage() {
     setActiveFilters({});
     setPage(1);
   };
-
-  /* =====================================================
-     REFRESH TRANSACTIONS
-  ===================================================== */
 
   const handleRefresh = async () => {
     try {
@@ -249,20 +193,12 @@ export default function LiveGiftTransactionsAdminPage() {
     }
   };
 
-  /* =====================================================
-     CHANGE PAGE SIZE
-  ===================================================== */
-
   const handleLimitChange = (event) => {
     const newLimit = Number(event.target.value);
 
     setLimit(newLimit);
     setPage(1);
   };
-
-  /* =====================================================
-     PAGINATION
-  ===================================================== */
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -276,23 +212,9 @@ export default function LiveGiftTransactionsAdminPage() {
     }
   };
 
-  /* =====================================================
-     TABLE COLUMNS
-  ===================================================== */
-
   const columns = useMemo(
     () => [
-      {
-        header: "S.No.",
-
-        render: (row) => {
-          const index = transactions.findIndex(
-            (transaction) => transaction.id === row.id
-          );
-
-          return (currentPage - 1) * limit + index + 1;
-        },
-      },
+    
 
       {
         header: "Transaction ID",
@@ -303,51 +225,34 @@ export default function LiveGiftTransactionsAdminPage() {
               className="font-medium text-gray-800"
               title={row.id}
             >
-              {shortenId(row.id, 14)}
-            </p>
-
-            <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard
-                  .writeText(row.id)
-                  .catch((copyError) => {
-                    console.error(
-                      "Could not copy transaction ID:",
-                      copyError
-                    );
-                  });
-              }}
-              className="mt-1 text-xs text-purple-600 hover:underline"
-            >
-              Copy ID
-            </button>
+              {shortenId(row.id.slice(0,8))}
+            </p>    
           </div>
         ),
       },
 
       {
-        header: "Sender ID",
+        header: "Sender ",
 
         render: (row) => (
           <span
             className="font-medium text-gray-700"
             title={row.senderId}
           >
-            {shortenId(row.senderId)}
+            {shortenId(row.userName)}
           </span>
         ),
       },
 
       {
-        header: "Astrologer ID",
+        header: "Astrologer ",
 
         render: (row) => (
           <span
             className="font-medium text-gray-700"
             title={row.astrologerId}
           >
-            {shortenId(row.astrologerId)}
+            {shortenId(row.astrologerName)}
           </span>
         ),
       },
@@ -360,20 +265,20 @@ export default function LiveGiftTransactionsAdminPage() {
             className="text-gray-600"
             title={row.streamId}
           >
-            {shortenId(row.streamId)}
+            {shortenId(row.streamId.slice(0,8))}
           </span>
         ),
       },
 
       {
-        header: "Gift ID",
+        header: "Name",
 
         render: (row) => (
           <span
             className="text-gray-600"
             title={row.giftId}
           >
-            {shortenId(row.giftId)}
+            {shortenId(row.giftName)}
           </span>
         ),
       },
@@ -407,7 +312,7 @@ export default function LiveGiftTransactionsAdminPage() {
               row.status
             )}`}
           >
-            {row.status || "UNKNOWN"}
+            {row.status.slice(0,1) || "UNKNOWN"}
           </span>
         ),
       },
