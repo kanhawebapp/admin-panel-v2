@@ -469,7 +469,7 @@ const handleDownloadInvoice = async (row) => {
         
           <p className="break-all">
             <span className="text-gray-500">Service: </span>
-            {row.serviceId}
+            {row.serviceName}
           </p>
             <p>
             <span className="text-gray-500">Type: </span>
