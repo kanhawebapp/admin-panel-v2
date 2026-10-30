@@ -26,7 +26,99 @@ const PaymentInvoice = React.forwardRef(({ data }, ref) => {
     const num = Number(value || 0);
     return num.toFixed(2);
   };
+  const numberToWords = (num) => {
+    if (!num || Number(num) === 0) return "Zero Rupees Only";
 
+    const ones = [
+      "",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
+
+    const tens = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+
+    const convert = (n) => {
+      if (n < 20) return ones[n];
+
+      if (n < 100) {
+        return tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "");
+      }
+
+      if (n < 1000) {
+        return (
+          ones[Math.floor(n / 100)] +
+          " Hundred" +
+          (n % 100 ? " " + convert(n % 100) : "")
+        );
+      }
+
+      return "";
+    };
+
+    const convertIndian = (n) => {
+      if (n === 0) return "";
+
+      let result = "";
+
+      const crore = Math.floor(n / 10000000);
+      n %= 10000000;
+
+      const lakh = Math.floor(n / 100000);
+      n %= 100000;
+
+      const thousand = Math.floor(n / 1000);
+      n %= 1000;
+
+      const hundred = n;
+
+      if (crore) result += convert(crore) + " Crore ";
+      if (lakh) result += convert(lakh) + " Lakh ";
+      if (thousand) result += convert(thousand) + " Thousand ";
+      if (hundred) result += convert(hundred);
+
+      return result.trim();
+    };
+
+    const amount = Number(num);
+    const rupees = Math.floor(amount);
+    const paise = Math.round((amount - rupees) * 100);
+
+    let result = convertIndian(rupees) + " Rupees";
+
+    if (paise > 0) {
+      result += " and " + convert(paise) + " Paise";
+    }
+
+    return result + " Only";
+  };
   return (
     <>
     <style jsx global>{`
@@ -95,7 +187,7 @@ className="invoice-page mx-auto box-border w-[210mm] bg-white text-black px-[10m
 
       <div className="mt-11 grid grid-cols-2 gap-8">
         <div>
-          <p className="font-bold mb-2">Customer Address:</p>
+          <p className="font-bold mb-2">Customer Address{" "}:</p>
 
           <p>{data.userName || "-"}</p>
 
@@ -108,35 +200,35 @@ className="invoice-page mx-auto box-border w-[210mm] bg-white text-black px-[10m
           <p>{data.country || "India"}</p>
 
           <div className="mt-5">
-            <p className="font-bold">Place of Supply:</p>
+            <p className="font-bold">Place of Supply{" "}:</p>
 
             <p>{data.placeOfSupply || data.state || "-"}</p>
           </div>
         </div>
 
         <div className="text-right">
-          <p>
-            <span className="font-bold">Transaction Id:</span>{" "}
-            {data.transactionId || data.razorpayOrderId || "-"}
-          </p>
+            <p>
+              <span className="font-bold">Transaction Id :</span>{" "}
+              {data.transactionId || "-"}
+            </p>
+
+            <p className="mt-3">
+              <span className="font-bold">Payment Id :</span>{" "}
+              {data.paymentOrderId || data.razorpayOrderId || "-"}
+            </p>
 
           <p className="mt-3">
-            <span className="font-bold">Payment Id:</span>{" "}
-            {data.razorpayPaymentId || "-"}
-          </p>
-
-          <p className="mt-3">
-            <span className="font-bold">Recipient GSTIN:</span>{" "}
+            <span className="font-bold">Recipient GSTIN{" "}:</span>{" "}
             {data.recipientGSTIN || "-"}
           </p>
 
           <p className="mt-3">
-            <span className="font-bold">Invoice Voucher No:</span>{" "}
+            <span className="font-bold">Invoice No{" "}:</span>{" "}
             {data.invoiceNo || "-"}
           </p>
 
           <p className="mt-3">
-            <span className="font-bold">Invoice Voucher Date:</span>{" "}
+            <span className="font-bold">Date{" "}:</span>{" "}
             {formatDate(data.createdAt)}
           </p>
         </div>
@@ -199,9 +291,11 @@ className="invoice-page mx-auto box-border w-[210mm] bg-white text-black px-[10m
           <tbody>
             {/* Item */}
             <tr>
-              <td className="border border-black px-2 py-2">
-                Purchase of AT-Money via Razorpay
-              </td>
+                     <td className="border border-black px-2 py-2">
+  {data.rechargePackName
+    ? "Wallet Recharge"
+    : data.serviceName || "Dhwani Astro Services"}
+</td>
 
               <td className="border border-black px-2 py-2 text-right">
                 ₹{money(data.amount)}
@@ -305,82 +399,51 @@ className="invoice-page mx-auto box-border w-[210mm] bg-white text-black px-[10m
               </td>
             </tr>
 
-            {/* Amount in words */}
-            <tr className="font-bold">
-              <td
-                colSpan="8"
-                className="border border-black px-2 py-1 text-right"
-              >
-                Total amount (in words)
-              </td>
+         
+              <tr className="font-bold">
+                <td
+                  colSpan="8"
+                  className="border border-black px-2 py-1 text-right"
+                >
+                  Total amount (in words)
+                </td>
 
-              <td
-                colSpan="2"
-                className="border border-black px-2 py-1 text-right"
-              >
-                {data.amountInWords || "-"}
-              </td>
-            </tr>
+                <td
+                  colSpan="2"
+                  className="border border-black px-2 py-1 text-right"
+                >
+                  {numberToWords(data.totalAmount ?? data.amount ?? 0)}
+                </td>
+              </tr>
 
-            {/* Received */}
-            <tr className="font-bold">
-              <td
-                colSpan="8"
-                className="border border-black px-2 py-1 text-right"
-              >
-                Total amount received
-              </td>
-
-              <td
-                colSpan="2"
-                className="border border-black px-2 py-1 text-right"
-              >
-                INR{" "}
-                {money(data.amountReceived || data.totalAmount || data.amount)}
-              </td>
-            </tr>
+          
           </tbody>
         </table>
       </div>
 
-      {/* =========================================================
-          TRANSACTION HISTORY NOTE
-      ========================================================= */}
+     
 
-      <div className="mt-[35px] text-[11px]">
-        To view your transaction history, please visit:{" "}
-        <span className="underline">{data.transactionHistoryUrl || "-"}</span>
-      </div>
+       <div className="mt-1">
+          <p className="font-bold mb-1">Other details:</p>
 
-      {/* =========================================================
-          OTHER DETAILS
-      ========================================================= */}
+          <div className="grid grid-cols-[220px_20px_1fr] leading-6">
+            <span>HSN/SAC</span>
+            <span>:</span>
+            <span>{data.hsnSac || "999799"}</span>
 
-      <div className="mt-[35px]">
-        <p className="font-bold mb-1">Other details:</p>
+            <span>Whether tax is payable on reverse charge basis</span>
+            <span>:</span>
+            <span>{data.reverseCharge === true ? "Yes" : "No"}</span>
 
-        <div className="grid grid-cols-[220px_20px_1fr] leading-6">
-          <span>HSN/SAC</span>
-          <span>:</span>
-          <span>{data.hsnSac || "999799"}</span>
-
-          <span>Whether tax is payable on reverse charge basis</span>
-          <span>:</span>
-          <span>{data.reverseCharge === true ? "Yes" : "No"}</span>
-
-          <span>PAN Number</span>
-          <span>:</span>
-          <span>{data.panNumber || "-"}</span>
+            <span>PAN Number</span>
+            <span>:</span>
+            <span>{data.panNumber || "-"}</span>
+          </div>
         </div>
-      </div>
 
-      {/* =========================================================
-          FOOTER
-      ========================================================= */}
-
-      <div className="mt-[45px] text-[11px]">
-        This is a computer generated invoice voucher, no signatures required
-      </div>
+        <div className="mt-[30px] text-[11px]">
+          This is a computer generated invoice, No signatures required
+        </div>
     </div>
     </>
   );
