@@ -24,6 +24,7 @@ export const GET_ALL_SCHEDULED_LIVES = gql`
         startedAt
         endedAt
         totalViews
+        isDeleted
 
         astrologer {
           id
