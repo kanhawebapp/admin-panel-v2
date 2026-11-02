@@ -210,21 +210,18 @@ export default function ScheduledLivesAdminPage() {
      GET SCHEDULED LIVES
   ============================================ */
 
-  const {
-    data,
-    loading,
-    error,
-    refetch,
-    networkStatus,
-  } = useQuery(GET_ALL_SCHEDULED_LIVES, {
-    variables: {
-      page: currentPage,
-      limit: pageSize,
-      search: debouncedSearch || null,
+  const { data, loading, error, refetch, networkStatus } = useQuery(
+    GET_ALL_SCHEDULED_LIVES,
+    {
+      variables: {
+        page: currentPage,
+        limit: pageSize,
+        search: debouncedSearch || null,
+      },
+      fetchPolicy: "network-only",
+      notifyOnNetworkStatusChange: true,
     },
-    fetchPolicy: "network-only",
-    notifyOnNetworkStatusChange: true,
-  });
+  );
 
   /* ============================================
      EXTRACT PAGINATION RESPONSE
@@ -243,8 +240,7 @@ export default function ScheduledLivesAdminPage() {
    * The server may clamp the page if records have
    * been deleted or search results have changed.
    */
-  const serverCurrentPage =
-    paginationData?.currentPage ?? currentPage;
+  const serverCurrentPage = paginationData?.currentPage ?? currentPage;
 
   const isRefreshing = loading && !data;
 
@@ -274,10 +270,10 @@ export default function ScheduledLivesAdminPage() {
     {
       onError: (mutationError) => {
         setActionError(
-          mutationError.message || "Failed to update scheduled live."
+          mutationError.message || "Failed to update scheduled live.",
         );
       },
-    }
+    },
   );
 
   /* ============================================
@@ -289,10 +285,10 @@ export default function ScheduledLivesAdminPage() {
     {
       onError: (mutationError) => {
         setActionError(
-          mutationError.message || "Failed to delete scheduled live."
+          mutationError.message || "Failed to delete scheduled live.",
         );
       },
-    }
+    },
   );
 
   /* ============================================
@@ -311,7 +307,7 @@ export default function ScheduledLivesAdminPage() {
       setSuccessMessage("");
       setActionError("");
     },
-    [totalPages]
+    [totalPages],
   );
 
   const handlePageSizeChange = (event) => {
@@ -336,15 +332,9 @@ export default function ScheduledLivesAdminPage() {
 
     const visiblePages = 5;
 
-    let startPage = Math.max(
-      1,
-      currentPage - Math.floor(visiblePages / 2)
-    );
+    let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
 
-    let endPage = Math.min(
-      totalPages,
-      startPage + visiblePages - 1
-    );
+    let endPage = Math.min(totalPages, startPage + visiblePages - 1);
 
     startPage = Math.max(1, endPage - visiblePages + 1);
 
@@ -436,7 +426,7 @@ export default function ScheduledLivesAdminPage() {
 
     if (endDate <= startDate) {
       setActionError(
-        "The scheduled end date and time must be after the start date and time."
+        "The scheduled end date and time must be after the start date and time.",
       );
       return;
     }
@@ -474,7 +464,7 @@ export default function ScheduledLivesAdminPage() {
       });
     } catch (mutationError) {
       setActionError(
-        mutationError.message || "Failed to update scheduled live."
+        mutationError.message || "Failed to update scheduled live.",
       );
     }
   };
@@ -490,7 +480,7 @@ export default function ScheduledLivesAdminPage() {
     }
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${live.title || "this live session"}"?`
+      `Are you sure you want to delete "${live.title || "this live session"}"?`,
     );
 
     if (!confirmed) return;
@@ -537,7 +527,7 @@ export default function ScheduledLivesAdminPage() {
       }
     } catch (mutationError) {
       setActionError(
-        mutationError.message || "Failed to delete scheduled live."
+        mutationError.message || "Failed to delete scheduled live.",
       );
     } finally {
       setDeletingLiveId(null);
@@ -549,18 +539,13 @@ export default function ScheduledLivesAdminPage() {
   ============================================ */
 
   const firstRecord =
-    totalRecords === 0
-      ? 0
-      : (serverCurrentPage - 1) * pageSize + 1;
+    totalRecords === 0 ? 0 : (serverCurrentPage - 1) * pageSize + 1;
 
-  const lastRecord = Math.min(
-    serverCurrentPage * pageSize,
-    totalRecords
-  );
+  const lastRecord = Math.min(serverCurrentPage * pageSize, totalRecords);
 
   const pageViews = scheduledLives.reduce(
     (sum, live) => sum + (Number(live.totalViews) || 0),
-    0
+    0,
   );
 
   /* ============================================
@@ -570,7 +555,6 @@ export default function ScheduledLivesAdminPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
-
         {/* ========================================
             PAGE HEADER
         ======================================== */}
@@ -598,9 +582,7 @@ export default function ScheduledLivesAdminPage() {
             ALERT MESSAGES
         ======================================== */}
 
-        <AlertMessage type="success">
-          {successMessage}
-        </AlertMessage>
+        <AlertMessage type="success">{successMessage}</AlertMessage>
 
         <AlertMessage type="error">
           {actionError || error?.message}
@@ -611,7 +593,6 @@ export default function ScheduledLivesAdminPage() {
         ======================================== */}
 
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
           {/* TOTAL RECORDS */}
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -631,9 +612,7 @@ export default function ScheduledLivesAdminPage() {
           {/* CURRENT PAGE */}
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">
-              Current Page
-            </p>
+            <p className="text-sm font-medium text-gray-500">Current Page</p>
 
             <p className="mt-2 text-3xl font-bold text-gray-900">
               {totalPages > 0 ? serverCurrentPage : 0}
@@ -671,7 +650,6 @@ export default function ScheduledLivesAdminPage() {
 
         <div className="mb-5 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-
             {/* SEARCH */}
 
             <div className="w-full md:max-w-xl">
@@ -743,7 +721,6 @@ export default function ScheduledLivesAdminPage() {
         ======================================== */}
 
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-
           {/* TABLE HEADER */}
 
           <div className="flex flex-col gap-2 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -795,18 +772,13 @@ export default function ScheduledLivesAdminPage() {
           {(!loading || data) && (
             <div className="overflow-x-auto">
               <table className="min-w-[1100px] w-full border-collapse text-left text-sm">
-
                 {/* TABLE HEAD */}
 
                 <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
                   <tr>
-                    <th className="whitespace-nowrap px-5 py-4">
-                      S.No.
-                    </th>
+                    <th className="whitespace-nowrap px-5 py-4">S.No.</th>
 
-                    <th className="whitespace-nowrap px-5 py-4">
-                      Astrologer
-                    </th>
+                    <th className="whitespace-nowrap px-5 py-4">Astrologer</th>
 
                     <th className="whitespace-nowrap px-5 py-4">
                       Live Details
@@ -820,9 +792,7 @@ export default function ScheduledLivesAdminPage() {
                       Scheduled End
                     </th>
 
-                    <th className="whitespace-nowrap px-5 py-4">
-                      Status
-                    </th>
+                    <th className="whitespace-nowrap px-5 py-4">Status</th>
 
                     <th className="whitespace-nowrap px-5 py-4 text-right">
                       Views
@@ -837,15 +807,11 @@ export default function ScheduledLivesAdminPage() {
                 {/* TABLE BODY */}
 
                 <tbody className="divide-y divide-gray-100">
-
                   {/* EMPTY STATE */}
 
                   {scheduledLives.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={8}
-                        className="px-6 py-16 text-center"
-                      >
+                      <td colSpan={8} className="px-6 py-16 text-center">
                         <div className="mx-auto max-w-md">
                           <h3 className="text-base font-semibold text-gray-800">
                             No scheduled lives found
@@ -885,10 +851,7 @@ export default function ScheduledLivesAdminPage() {
                     const isDeleting = deletingLiveId === live.id;
 
                     return (
-                      <tr
-                        key={live.id}
-                        className="transition hover:bg-gray-50"
-                      >
+                      <tr key={live.id} className="transition hover:bg-gray-50">
                         {/* SERIAL NUMBER */}
 
                         <td className="whitespace-nowrap px-5 py-4 text-gray-600">
@@ -907,9 +870,7 @@ export default function ScheduledLivesAdminPage() {
                               />
                             ) : (
                               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-600">
-                                {astrologerName
-                                  .charAt(0)
-                                  .toUpperCase()}
+                                {astrologerName.charAt(0).toUpperCase()}
                               </div>
                             )}
 
@@ -928,7 +889,7 @@ export default function ScheduledLivesAdminPage() {
                               )}
 
                               <p className="mt-1 max-w-[180px] break-all text-xs text-gray-400">
-                                ID: {live.astrologerId || "—"}
+                                ID: {live.astrologerId.slice(0,8) || "—"}
                               </p>
                             </div>
                           </div>
@@ -943,11 +904,11 @@ export default function ScheduledLivesAdminPage() {
                             </p>
 
                             <p className="mt-1 break-all text-xs text-gray-500">
-                              Channel: {live.channelName || "—"}
+                              Channel: {live.channelName.slice(0,8) || "—"}
                             </p>
 
                             <p className="mt-1 break-all text-xs text-gray-400">
-                              ID: {live.id}
+                              ID: {live.id.slice(0,8)}
                             </p>
                           </div>
                         </td>
@@ -976,7 +937,7 @@ export default function ScheduledLivesAdminPage() {
 
                         <td className="whitespace-nowrap px-5 py-4 text-right font-medium text-gray-800">
                           {(Number(live.totalViews) || 0).toLocaleString(
-                            "en-IN"
+                            "en-IN",
                           )}
                         </td>
 
@@ -984,25 +945,24 @@ export default function ScheduledLivesAdminPage() {
 
                         <td className="px-5 py-4">
                           <div className="flex items-center justify-center gap-2">
-
                             {/* EDIT */}
-
                             <button
                               type="button"
                               onClick={() => handleEdit(live)}
-                              disabled={isDeleting || updating}
-                              className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+                              disabled={live.isDeleted || isDeleting || updating}
+                              className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-blue-50"
                             >
                               Edit
                             </button>
 
                             {/* DELETE */}
-
                             <button
                               type="button"
                               onClick={() => handleDelete(live)}
-                              disabled={isDeleting || deleting || updating}
-                              className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                              disabled={
+                                live.isDeleted || isDeleting || deleting || updating
+                              }
+                              className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-red-50"
                             >
                               {isDeleting ? "Deleting..." : "Delete"}
                             </button>
@@ -1021,7 +981,6 @@ export default function ScheduledLivesAdminPage() {
           ======================================== */}
 
           <div className="flex flex-col gap-4 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-
             {/* RECORD SUMMARY */}
 
             <p className="text-sm text-gray-500">
@@ -1045,7 +1004,6 @@ export default function ScheduledLivesAdminPage() {
             {/* PAGINATION CONTROLS */}
 
             <div className="flex flex-wrap items-center gap-2">
-
               {/* FIRST PAGE */}
 
               <PaginationButton
@@ -1082,9 +1040,7 @@ export default function ScheduledLivesAdminPage() {
               <PaginationButton
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={
-                  currentPage >= totalPages ||
-                  loading ||
-                  totalPages === 0
+                  currentPage >= totalPages || loading || totalPages === 0
                 }
               >
                 Next
@@ -1095,9 +1051,7 @@ export default function ScheduledLivesAdminPage() {
               <PaginationButton
                 onClick={() => handlePageChange(totalPages)}
                 disabled={
-                  currentPage >= totalPages ||
-                  loading ||
-                  totalPages === 0
+                  currentPage >= totalPages || loading || totalPages === 0
                 }
               >
                 Last
@@ -1114,10 +1068,7 @@ export default function ScheduledLivesAdminPage() {
           <div
             className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4"
             onMouseDown={(event) => {
-              if (
-                event.target === event.currentTarget &&
-                !updating
-              ) {
+              if (event.target === event.currentTarget && !updating) {
                 closeEditModal();
               }
             }}
@@ -1128,7 +1079,6 @@ export default function ScheduledLivesAdminPage() {
               aria-labelledby="edit-live-title"
               className="my-auto w-full max-w-xl rounded-2xl bg-white shadow-2xl"
             >
-
               {/* MODAL HEADER */}
 
               <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-6 py-5">
@@ -1159,9 +1109,7 @@ export default function ScheduledLivesAdminPage() {
               {/* MODAL FORM */}
 
               <form onSubmit={handleUpdate}>
-
                 <div className="space-y-5 px-6 py-6">
-
                   {/* TITLE */}
 
                   <div>
@@ -1176,9 +1124,7 @@ export default function ScheduledLivesAdminPage() {
                       id="edit-live-title-input"
                       type="text"
                       value={editTitle}
-                      onChange={(event) =>
-                        setEditTitle(event.target.value)
-                      }
+                      onChange={(event) => setEditTitle(event.target.value)}
                       placeholder="Enter live session title"
                       maxLength={200}
                       required
@@ -1217,8 +1163,7 @@ export default function ScheduledLivesAdminPage() {
                       htmlFor="edit-live-start"
                       className="mb-2 block text-sm font-semibold text-gray-700"
                     >
-                      Scheduled Start{" "}
-                      <span className="text-red-500">*</span>
+                      Scheduled Start <span className="text-red-500">*</span>
                     </label>
 
                     <input
@@ -1241,8 +1186,7 @@ export default function ScheduledLivesAdminPage() {
                       htmlFor="edit-live-end"
                       className="mb-2 block text-sm font-semibold text-gray-700"
                     >
-                      Scheduled End{" "}
-                      <span className="text-red-500">*</span>
+                      Scheduled End <span className="text-red-500">*</span>
                     </label>
 
                     <input
@@ -1276,7 +1220,6 @@ export default function ScheduledLivesAdminPage() {
                 {/* MODAL FOOTER */}
 
                 <div className="flex flex-col-reverse gap-3 border-t border-gray-200 px-6 py-4 sm:flex-row sm:justify-end">
-
                   <button
                     type="button"
                     onClick={closeEditModal}
