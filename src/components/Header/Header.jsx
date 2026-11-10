@@ -88,7 +88,7 @@ useEffect(() => {
         <div className="relative">
           <button
             onClick={() => setUserMenuOpen(!isUserMenuOpen)}
-            className="flex items-center gap-2"
+            className="flex items-center cursor-pointer gap-2"
           >
             <div className="text-right text-white">
               <h4 className="text-sm font-semibold">USER</h4>
@@ -103,22 +103,22 @@ useEffect(() => {
             />
           </button>
           {isUserMenuOpen && (
-            <div className="absolute text-black right-0 mt-2 w-40 bg-white border overflow-hidden rounded-lg shadow-md">
+            <div className="absolute text-black right-0 mt-2 w-30 bg-purple-200 border border-gray-200  overflow-hidden rounded-xl shadow-md">
               <Link
                 href="/Admindash/astroprofile"
-                className="block px-4 py-2 text-sm hover:bg-gray-100"
+                className="block px-4 text-center py-2 text-sm hover:bg-purple-500 hover:text-yellow-400"
               >
                 Profile
               </Link>
               <Link
                 href="#"
-                className="block px-4 py-2 text-sm hover:bg-gray-100"
+                className="block px-4 py-2  text-center text-sm hover:bg-purple-500 hover:text-yellow-400"
               >
                 Settings
               </Link>
               <CustomButton
                 onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                className="block w-full bg-purple-800 text-yellow-400 text-center rounded-t-xl  px-4 py-2 text-sm hover:bg-yellow-400 hover:text-purple-800"
               >
                 Logout
               </CustomButton>

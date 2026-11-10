@@ -22,8 +22,10 @@ import ConfirmModal from "@/components/Custom/ConfirmModal";
 import ProtectedActionButton from "@/components/Custom/ActionButton";
 import { usePermissions } from "@/context/PermissionContext";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function ModuleManager() {
+  const router = useRouter();
   const { confirmState, setConfirmState, executeAction, handleConfirm } =
     useActionHandler();
 
@@ -185,14 +187,17 @@ export default function ModuleManager() {
       if (!canSubmit) return;
 
       if (useCustomSection && !customSection.trim()) {
-        alert("Enter section name");
+        toast.error("Enter section name");
         return;
       }
 
       if (useCustomSection) {
-        const exists = sectionsFromDB.includes(customSection.toLowerCase());
+        const exists = sectionsFromDB.includes(
+          customSection.toLowerCase().trim(),
+        );
+
         if (exists) {
-          alert("Section already exists");
+          toast.error("Section already exists");
           return;
         }
       }
@@ -202,12 +207,12 @@ export default function ModuleManager() {
         : section.toLowerCase().trim();
 
       if (!finalSection) {
-        alert("Select section");
+        toast.error("Select section");
         return;
       }
 
       if (!name.trim() || !slug.trim()) {
-        alert("Name and slug are required");
+        toast.error("Name and slug are required");
         return;
       }
 
@@ -221,6 +226,7 @@ export default function ModuleManager() {
             section: finalSection,
           },
         });
+
         toast.success("Updated Successfully");
       } else {
         await createModule({
@@ -231,10 +237,12 @@ export default function ModuleManager() {
             section: finalSection,
           },
         });
+
         toast.success("Created Successfully");
       }
 
       await refetch();
+
       setOpenModal(false);
       setEditingModule(null);
       setName("");
@@ -244,6 +252,15 @@ export default function ModuleManager() {
       setCustomSection("");
     } catch (err) {
       console.error("Module save error:", err);
+
+      const errorMessage =
+        err?.graphQLErrors?.[0]?.message ||
+        err?.networkError?.result?.errors?.[0]?.message ||
+        err?.message ||
+        "Something went wrong";
+
+      toast.error(`${errorMessage}. Please login first.`);
+      router.push("/");
     }
   };
 
