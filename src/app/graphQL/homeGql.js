@@ -155,3 +155,52 @@ export const DELETE_BANNER = gql`
     deleteBanner(id: $id)
   }
 `;
+
+export const GET_LIVE_INTERACTION_HISTORY = gql`
+  query GetLiveInteractionHistory(
+    $searchInput: LiveInteractionHistorySearchInput
+  ) {
+    getLiveInteractionHistory(searchInput: $searchInput) {
+      data {
+        sessionId
+        liveStreamId
+        agoraUid
+
+        userId
+        userName
+        mobile
+
+        astrologerId
+        astrologerName
+
+        interactionType
+        status
+
+        ratePerMin
+        dhwaniEarned
+        astrologerEarned
+        chargedCoins
+
+        durationSeconds
+        billableMinutes
+
+        requestedAt
+        acceptedAt
+        startedAt
+        endedAt
+        createdAt
+      }
+
+      totalCount
+      currentPage
+      totalPages
+
+      totalCoinsDeducted
+      totalDhwaniEarned
+      totalAstrologerEarned
+
+      totalAudioCalls
+      totalVideoCalls
+    }
+  }
+`;
