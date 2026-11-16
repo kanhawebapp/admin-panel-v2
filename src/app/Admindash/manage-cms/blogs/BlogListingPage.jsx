@@ -20,26 +20,26 @@ export default function BlogListPage() {
 const handleDelete = async (id) => {
   try {
     const confirmDelete = window.confirm(
-      "Delete this category?"
+      "Delete this Blog?"
     );
 
     if (!confirmDelete) return;
 
-    await deleteBlogCategory({
+    await deleteBlog({
       variables: {
         id,
       },
     });
 
     toast.success(
-      "Category deleted successfully"
+      "Blog deleted successfully"
     );
 
     refetch();
   } catch (error) {
     toast.error(
       error.message ||
-        "Unable to delete category"
+        "Unable to delete Blog"
     );
   }
 };
