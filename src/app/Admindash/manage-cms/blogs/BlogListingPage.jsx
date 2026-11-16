@@ -45,7 +45,7 @@ const handleDelete = async (id) => {
 };
 
   const handleEdit = (blog) => {
-    router.push(`/Admindash/managecms/blogs/edit/${blog.slug}`);
+    router.push(`/Admindash/manage-cms/blogs/edit/${blog.slug}`);
   };
 
   return (

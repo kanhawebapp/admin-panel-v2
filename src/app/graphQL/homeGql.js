@@ -204,3 +204,157 @@ export const GET_LIVE_INTERACTION_HISTORY = gql`
     }
   }
 `;
+
+
+export const GET_PUJA_SERVICES = gql`
+  query GetPujaServices {
+    pujaServices {
+      id
+      title
+      slug
+      image
+      category
+
+      shortDescription
+      description
+      benefits
+      howToPerform
+      packaging
+
+      price
+      mrp
+      discount
+      customersCount
+      rating
+
+      mantraOptions {
+        id
+        name
+        originalPrice
+        offerPrice
+        sortOrder
+      }
+
+      faqs {
+        id
+        question
+        answer
+      }
+
+      reviews {
+        id
+        userName
+        rating
+        comment
+        createdAt
+      }
+    }
+  }
+`;
+
+export const CREATE_PUJA_SERVICE = gql`
+  mutation CreatePujaService(
+    $title: String!
+    $slug: String!
+    $image: String!
+    $category: String
+    $shortDescription: String
+    $description: String
+    $benefits: String
+    $howToPerform: String
+    $packaging: String
+    $price: Float!
+    $mrp: Float
+    $discount: Float
+    $customersCount: Int
+    $rating: Float
+    $mantraOptions: [PujaMantraOptionInput!]!
+    $faqs: [PujaFAQInput!]
+  ) {
+    createPujaService(
+      title: $title
+      slug: $slug
+      image: $image
+      category: $category
+
+      shortDescription: $shortDescription
+      description: $description
+      benefits: $benefits
+      howToPerform: $howToPerform
+      packaging: $packaging
+
+      price: $price
+      mrp: $mrp
+      discount: $discount
+      customersCount: $customersCount
+      rating: $rating
+
+      mantraOptions: $mantraOptions
+      faqs: $faqs
+    ) {
+      id
+      title
+    }
+  }
+`;
+
+export const UPDATE_PUJA_SERVICE = gql`
+  mutation UpdatePujaService(
+    $id: ID!
+    $title: String!
+    $slug: String!
+    $image: String!
+    $category: String
+    $shortDescription: String
+    $description: String
+    $benefits: String
+    $howToPerform: String
+    $packaging: String
+    $price: Float!
+    $mrp: Float
+    $discount: Float
+    $customersCount: Int
+    $rating: Float
+    $mantraOptions: [PujaMantraOptionInput!]!
+    $faqs: [PujaFAQInput!]
+  ) {
+    updatePujaService(
+      id: $id
+
+      title: $title
+      slug: $slug
+      image: $image
+      category: $category
+
+      shortDescription: $shortDescription
+      description: $description
+      benefits: $benefits
+      howToPerform: $howToPerform
+      packaging: $packaging
+
+      price: $price
+      mrp: $mrp
+      discount: $discount
+      customersCount: $customersCount
+      rating: $rating
+
+      mantraOptions: $mantraOptions
+      faqs: $faqs
+    ) {
+      id
+      title
+    }
+  }
+`;
+
+export const DELETE_PUJA_SERVICE = gql`
+  mutation DeletePujaService($id: ID!) {
+    deletePujaService(id: $id)
+  }
+`;
+
+ export const DELETE_PUJA_REVIEW = gql`
+  mutation DeletePujaReview($id: ID!) {
+    deletePujaReview(id: $id)
+  }
+`;

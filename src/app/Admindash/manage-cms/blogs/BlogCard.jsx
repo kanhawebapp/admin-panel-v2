@@ -33,14 +33,14 @@ export default function BlogCard({ blog, onEdit, onDelete }) {
         <h2 className="text-xl font-medium mb-2">{blog.title}</h2>
 
         <div className="flex gap-2 text-xs font-bold text-gray-500 mb-2">
-          <span>by {blog.author}</span>
+          {/* <span>by {blog.author}</span> */}
           <span>|</span>
           <span>{formatDate(blog.createdAt)}</span>
         </div>
 
         {/* <p className="text-gray-600 line-clamp-3">{blog.description}</p> */}
 
-        <hr className="my-2" />
+        <hr className="my-1" />
 
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2 text-gray-500">
