@@ -12,9 +12,12 @@ import CustomToggle from "@/components/Custom/CustomToggle";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-
+import { usePermissions } from "@/context/PermissionContext";
 export default function CreateNotice() {
   const [errors, setErrors] = useState({});
+  const { can, isSuperAdmin } = usePermissions();
+
+const canRead = isSuperAdmin || can("notice", "read");
   const [formData, setFormData] = useState({
     id: null,
     title: "",
@@ -23,11 +26,12 @@ export default function CreateNotice() {
     astrologers: [],
     isActive: true,
   });
-  const { data: astroData } = useQuery(GET_ASTRO_LIST, {
-    variables: {
-      searchInput: {},
-    },
-  });
+ const { data: astroData } = useQuery(GET_ASTRO_LIST, {
+  variables: {
+    searchInput: {},
+  },
+  skip: !canRead,
+});
   const validateForm = () => {
     const err = {};
 
@@ -175,9 +179,17 @@ export default function CreateNotice() {
     }
   };
 
-  const { data: noticeData, loading: noticeLoading } = useQuery(GET_NOTICES);
+const { data: noticeData, loading: noticeLoading } = useQuery(GET_NOTICES, {
+  skip: !canRead,
+});
   const notices = noticeData?.getNotices || [];
-
+if (!canRead) {
+  return (
+    <p className="p-10 text-red-500">
+      No Access to Notice Board. Conatct to Admin.
+    </p>
+  );
+}
   return (
     <div className="bg-white p-6 rounded-xl shadow">
       <h2 className="text-xl font-semibold mb-5">Create Notice</h2>
