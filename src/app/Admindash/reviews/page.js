@@ -7,19 +7,22 @@ import { useEffect, useMemo, useState } from "react";
 import DataTable from "@/components/utils/DataTable";
 import Link from "next/link";
 import CustomToggle from "@/components/Custom/CustomToggle";
-import { GET_USER_REVIEWS, TOGGLE_REVIEW_FLAG, UPDATE_REVIEW_COMMENT } from "@/app/graphQL/astroHiring";
+import {
+  GET_USER_REVIEWS,
+  TOGGLE_REVIEW_FLAG,
+  UPDATE_REVIEW_COMMENT,
+} from "@/app/graphQL/astroHiring";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import SessionMessagesModal from "../user/SessionModal";
-
-
+import { usePermissions } from "@/context/PermissionContext";
 
 export default function ReviewsPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
   const [searchName, setSearchName] = useState("");
-const [editedRating, setEditedRating] = useState(5);
+  const [editedRating, setEditedRating] = useState(5);
   const [searchMobile, setSearchMobile] = useState("");
 
   const [searchAstrologerName, setSearchAstrologerName] = useState("");
@@ -53,7 +56,10 @@ const [editedRating, setEditedRating] = useState(5);
     endDate: "",
   });
 
-  // DEBOUNCE
+  const { can, isSuperAdmin } = usePermissions();
+
+  const canRead = isSuperAdmin || can("review", "read");
+  const canUpdate = isSuperAdmin || can("review", "update");
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
@@ -126,15 +132,13 @@ const [editedRating, setEditedRating] = useState(5);
     searchInput.endDate = filters.endDate;
   }
 
-  // API CALL
   const { data, loading, error, refetch } = useQuery(GET_USER_REVIEWS, {
     variables: {
       searchInput,
     },
     fetchPolicy: "network-only",
-    fetchPolicy: "network-only",
+    skip: !canRead,
   });
-
   const reviews = data?.getUserReviews?.data || [];
 
   const totalCount = data?.getUserReviews?.totalCount || 0;
@@ -238,7 +242,13 @@ const [editedRating, setEditedRating] = useState(5);
         render: (row) => (
           <CustomToggle
             checked={row.isFlagged}
+            disabled={!canUpdate}
             onChange={async (val) => {
+              if (!canUpdate) {
+                toast.error("No permission");
+                return;
+              }
+
               try {
                 await toggleReviewFlag({
                   variables: {
@@ -246,8 +256,8 @@ const [editedRating, setEditedRating] = useState(5);
                     isFlagged: val,
                   },
                 });
-                await refetch();
 
+                await refetch();
                 toast.success("Review updated");
               } catch (err) {
                 toast.error("Update failed");
@@ -271,13 +281,23 @@ const [editedRating, setEditedRating] = useState(5);
                 View
               </button>
               <button
+                disabled={!canUpdate}
                 onClick={() => {
+                  if (!canUpdate) {
+                    toast.error("No permission");
+                    return;
+                  }
+
                   setSelectedReviewId(row.reviewId);
                   setEditedComment(row.comment || "");
                   setEditedRating(row.rating);
                   setEditModalOpen(true);
                 }}
-                className="px-3 py-1 bg-black/50 text-white rounded-full hover:scale-104 cursor-pointer text-[10px]"
+                className={`px-3 py-1 bg-black/50 text-white rounded-full text-[10px] ${
+                  !canUpdate
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:scale-104 cursor-pointer"
+                }`}
               >
                 Edit
               </button>
@@ -317,7 +337,13 @@ const [editedRating, setEditedRating] = useState(5);
   if (error) {
     return <p className="p-10 text-red-500">Error loading reviews</p>;
   }
-
+if (!canRead) {
+  return (
+    <p className="p-10 text-red-500">
+      No Access to Reviews. Contact to Admin.
+    </p>
+  );
+}
   return (
     <div className="p-10 space-y-6">
       {/* HEADER */}
@@ -489,23 +515,21 @@ const [editedRating, setEditedRating] = useState(5);
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl p-6 w-full max-w-lg">
             <h2 className="text-lg font-semibold mb-4">Edit Review Comment</h2>
-<div className="mb-4">
-  <label className="block text-sm font-medium mb-2">
-    Rating
-  </label>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Rating</label>
 
-  <select
-    value={editedRating}
-    onChange={(e) => setEditedRating(Number(e.target.value))}
-    className="w-full border rounded-lg p-3"
-  >
-    {[1, 2, 3, 4, 5].map((r) => (
-      <option key={r} value={r}>
-        {r} Star
-      </option>
-    ))}
-  </select>
-</div>
+              <select
+                value={editedRating}
+                onChange={(e) => setEditedRating(Number(e.target.value))}
+                className="w-full border rounded-lg p-3"
+              >
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <option key={r} value={r}>
+                    {r} Star
+                  </option>
+                ))}
+              </select>
+            </div>
             <textarea
               rows={6}
               value={editedComment}
@@ -528,27 +552,31 @@ const [editedRating, setEditedRating] = useState(5);
 
               <button
                 disabled={updatingComment}
-                onClick={async () => {
-                  try {
-                    await updateReviewComment({
-                     variables: {
-  reviewId: selectedReviewId,
-  comment: editedComment,
-  rating: editedRating,
-},
-                    });
+               onClick={async () => {
+  if (!canUpdate) {
+    toast.error("No permission");
+    return;
+  }
 
-                    toast.success("Review updated");
+  try {
+    await updateReviewComment({
+      variables: {
+        reviewId: selectedReviewId,
+        comment: editedComment,
+        rating: editedRating,
+      },
+    });
 
-                    await refetch();
+    toast.success("Review updated");
+    await refetch();
 
-                    setEditModalOpen(false);
-                    setSelectedReviewId(null);
-                    setEditedComment("");
-                  } catch (err) {
-                    toast.error("Failed to update review");
-                  }
-                }}
+    setEditModalOpen(false);
+    setSelectedReviewId(null);
+    setEditedComment("");
+  } catch (err) {
+    toast.error("Failed to update review");
+  }
+}}
                 className="px-4 py-2 bg-violet-600 text-white rounded-lg"
               >
                 {updatingComment ? "Updating..." : "Submit"}
