@@ -54,7 +54,7 @@ const cards = [
     title: "Live",
     subtitle: "Stream",
     img: "/admin-img/live.gif",
-    link: "/Admindash/live-stream",
+    link: "/Admindash/live-stream/running-live",
     bg: "bg-[#AD88C6]",
     rounded: true,
   },

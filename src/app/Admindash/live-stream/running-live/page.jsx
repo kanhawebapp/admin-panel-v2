@@ -11,9 +11,6 @@ import {
   ADMIN_DELETE_SCHEDULED_LIVE,
 } from "@/app/graphQL/liveStream";
 
-/* =========================================
-   DATE HELPER
-========================================= */
 
 function formatDate(dateValue) {
   if (!dateValue) return "N/A";
@@ -35,28 +32,20 @@ function formatDate(dateValue) {
   });
 }
 
-/* =========================================
-   MAIN COMPONENT
-========================================= */
+
 
 export default function RunningLivesAdminPage() {
-  /* =========================================
-     SEARCH STATE
-  ========================================= */
+
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  /* =========================================
-     MESSAGE STATE
-  ========================================= */
+
 
   const [successMessage, setSuccessMessage] = useState("");
   const [actionError, setActionError] = useState("");
 
-  /* =========================================
-     DEBOUNCED SEARCH
-  ========================================= */
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -66,9 +55,7 @@ export default function RunningLivesAdminPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  /* =========================================
-     GET RUNNING LIVE STREAMS
-  ========================================= */
+
 
   const {
     data,
@@ -87,18 +74,14 @@ export default function RunningLivesAdminPage() {
     return lives.filter((live) => live.status === "LIVE");
   }, [data]);
 
-  /* =========================================
-     DELETE MUTATION
-  ========================================= */
+
 
   const [
     deleteLive,
     { loading: deleting },
   ] = useMutation(ADMIN_DELETE_SCHEDULED_LIVE);
 
-  /* =========================================
-     FILTER RUNNING LIVE STREAMS
-  ========================================= */
+
 
   const filteredLives = useMemo(() => {
     if (!debouncedSearch) {
@@ -131,9 +114,7 @@ export default function RunningLivesAdminPage() {
     });
   }, [runningLives, debouncedSearch]);
 
-  /* =========================================
-     DELETE RUNNING LIVE STREAM
-  ========================================= */
+
 
   const handleDelete = async (live) => {
     if (deleting) return;
@@ -162,10 +143,6 @@ export default function RunningLivesAdminPage() {
         },
       });
 
-      /*
-       * This assumes your existing GraphQL mutation
-       * returns adminDeleteScheduledLive as a Boolean.
-       */
 
       const deleted =
         result.data?.adminDeleteScheduledLive;
@@ -194,23 +171,11 @@ export default function RunningLivesAdminPage() {
     }
   };
 
-  /* =========================================
-     TABLE COLUMNS
-  ========================================= */
+
 
   const columns = useMemo(
     () => [
-      /* SERIAL NUMBER */
-
-      {
-        header: "S.No.",
-        render: (row) =>
-          filteredLives.findIndex(
-            (live) => live.id === row.id
-          ) + 1,
-      },
-
-      /* ASTROLOGER */
+  
 
       {
         header: "Astrologer",
@@ -222,20 +187,8 @@ export default function RunningLivesAdminPage() {
             "Unknown Astrologer";
 
           return (
-            <div className="flex min-w-[200px] items-center gap-3">
-              {row.astrologer?.profilePic ? (
-                <img
-                  src={row.astrologer.profilePic}
-                  alt={name}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-100 font-bold text-purple-700">
-                  {name.charAt(0).toUpperCase()}
-                </div>
-              )}
-
-              <div>
+            <div className="flex  items-center gap-3">
+                        <div>
                 <Link
                   href={`/Admindash/astrologer/astroprofile/${
                     row.astrologer?.id || row.astrologerId
@@ -260,66 +213,58 @@ export default function RunningLivesAdminPage() {
         },
       },
 
-      /* LIVE TITLE AND CHANNEL */
+
 
       {
         header: "Live Stream",
 
         render: (row) => (
-          <div className="min-w-[200px] max-w-[320px]">
+          <div className="=max-w-[320px]">
             <p className="font-semibold text-gray-800">
               {row.title || "Untitled"}
             </p>
 
             <p className="mt-1 break-all text-xs text-gray-500">
-              Channel: {row.channelName || "N/A"}
+              Channel: {row.channelName.slice(0,8) || "N/A"}
             </p>
 
             <p className="mt-1 break-all text-xs text-gray-400">
-              Stream ID: {row.id}
+              Stream ID: {row.id.slice(0,8)}
             </p>
           </div>
         ),
       },
 
-      /* START TIME */
-
       {
         header: "Started At",
 
         render: (row) => (
-          <span className="whitespace-nowrap text-sm text-gray-700">
+          <span className="whitespace-nowrap text-[10px] text-gray-700">
             {formatDate(row.startedAt)}
           </span>
         ),
       },
 
-      /* CHAT ROOM */
-
       {
         header: "Chat Room",
 
         render: (row) => (
-          <span className="break-all text-sm text-gray-700">
+          <span className="break-all text-xs text-gray-700">
             {row.chatRoomId || "N/A"}
           </span>
         ),
       },
 
-      /* STATUS */
-
       {
         header: "Status",
 
         render: (row) => (
-          <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700">
+          <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
             <span className="h-2 w-2 animate-pulse rounded-full bg-green-600" />
             LIVE
           </span>
         ),
       },
-
-      /* TOTAL VIEWS */
 
       {
         header: "Total Views",
@@ -331,8 +276,6 @@ export default function RunningLivesAdminPage() {
         ),
       },
 
-      /* CREATED AT */
-
       {
         header: "Created At",
 
@@ -343,8 +286,6 @@ export default function RunningLivesAdminPage() {
         ),
       },
 
-      /* ACTIONS */
-
       {
         header: "Actions",
 
@@ -354,7 +295,7 @@ export default function RunningLivesAdminPage() {
             onClick={() => handleDelete(row)}
             disabled={deleting}
             title="Delete running live stream"
-            className="rounded-lg bg-red-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {deleting ? "Deleting..." : "Delete"}
           </button>
@@ -364,9 +305,7 @@ export default function RunningLivesAdminPage() {
     [filteredLives, deleting]
   );
 
-  /* =========================================
-     ERROR STATE
-  ========================================= */
+ 
 
   if (error && !data) {
     return (
@@ -396,9 +335,7 @@ export default function RunningLivesAdminPage() {
     );
   }
 
-  /* =========================================
-     MAIN UI
-  ========================================= */
+
 
   return (
     <div className="min-h-screen space-y-6 bg-gray-50 p-6 md:p-10">
@@ -427,7 +364,7 @@ export default function RunningLivesAdminPage() {
           type="button"
           onClick={() => refetch()}
           disabled={loading || deleting}
-          className="w-fit rounded-lg bg-black px-5 py-2.5 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-fit rounded-full bg-blue-600 px-5 py-1.5 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Refreshing..." : "Refresh"}
         </button>
@@ -471,12 +408,12 @@ export default function RunningLivesAdminPage() {
         </div>
       )}
 
-      {/* SUMMARY CARDS */}
+   
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {/* RUNNING STREAMS */}
+   
 
-        <div className="rounded-xl border border-green-100 bg-white p-5 shadow-sm">
+        <div className="rounded-3xl border border-green-100 bg-white p-3 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-gray-500">
               Running Live Streams
@@ -487,7 +424,7 @@ export default function RunningLivesAdminPage() {
             </span>
           </div>
 
-          <h2 className="mt-3 text-3xl font-bold text-green-700">
+          <h2 className="mt-3 text-xl font-bold text-green-700">
             {runningLives.length}
           </h2>
 
@@ -498,12 +435,12 @@ export default function RunningLivesAdminPage() {
 
         {/* FILTERED RESULTS */}
 
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <div className="rounded-3xl  bg-white p-3 shadow-sm">
           <p className="text-sm font-medium text-gray-500">
             Filtered Results
           </p>
 
-          <h2 className="mt-3 text-3xl font-bold text-purple-600">
+          <h2 className="mt-3 text-xl font-bold text-purple-600">
             {filteredLives.length}
           </h2>
 
@@ -514,12 +451,12 @@ export default function RunningLivesAdminPage() {
 
         {/* TOTAL VIEWS */}
 
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <div className="rounded-3xl  bg-white p-3 shadow-sm">
           <p className="text-sm font-medium text-gray-500">
             Total Views
           </p>
 
-          <h2 className="mt-3 text-3xl font-bold text-blue-600">
+          <h2 className="mt-3 text-xl font-bold text-blue-600">
             {runningLives
               .reduce(
                 (total, live) =>

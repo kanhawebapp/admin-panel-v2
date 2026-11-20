@@ -278,45 +278,46 @@ export default function AstrologerHiring() {
       ),
     },
 
-    {
-      header: "Approval",
-      render: (row) => {
-        if (
-          row.interviewStatus === "REJECTED" ||
-          row.documentStatus === "REJECTED"
-        ) {
-          return <span className="text-red-600 font-medium">REJECTED</span>;
-        }
+   {
+  header: "Approval",
+  render: (row) => {
+    if (
+      row.interviewStatus === "REJECTED" ||
+      row.documentStatus === "REJECTED"
+    ) {
+      return <span className="text-red-600 font-medium">REJECTED</span>;
+    }
 
-        return (
-          <select
-            className={`border rounded px-2 py-1 ${
-              row.approvalStatus === "REJECTED" ||
-              row.approvalStatus === "APPROVED"
-                ? "cursor-not-allowed bg-gray-200 text-gray-500"
-                : ""
-            }`}
-            value={row.approvalStatus}
-            disabled={
-              row.approvalStatus === "REJECTED" ||
-              row.approvalStatus === "APPROVED"
-            }
-            onChange={(e) =>
-              updateApprovalStatus({
-                variables: {
-                  astrologerId: row.id,
-                  status: e.target.value,
-                },
-              }).then(refetch)
-            }
-          >
-            <option value="PENDING">Pending</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
-          </select>
-        );
-      },
-    },
+    const isDisabled =
+      row.interviewStatus === "PENDING" ||
+      row.approvalStatus === "REJECTED" ||
+      row.approvalStatus === "APPROVED";
+
+    return (
+      <select
+        className={`border rounded px-2 py-1 ${
+          isDisabled
+            ? "cursor-not-allowed bg-gray-200 text-gray-500"
+            : ""
+        }`}
+        value={row.approvalStatus}
+        disabled={isDisabled}
+        onChange={(e) =>
+          updateApprovalStatus({
+            variables: {
+              astrologerId: row.id,
+              status: e.target.value,
+            },
+          }).then(refetch)
+        }
+      >
+        <option value="PENDING">Pending</option>
+        <option value="APPROVED">Approved</option>
+        <option value="REJECTED">Rejected</option>
+      </select>
+    );
+  },
+},
 
     {
       header: "Profile",

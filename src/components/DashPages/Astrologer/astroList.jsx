@@ -241,13 +241,13 @@ const {
                   📝
                 </button>
 
-                <div className="absolute hidden group-hover:block z-50 bottom-full right-0 mb-2 w-72">
+                <div className="absolute hidden group-hover:block z-50 bottom-full right-0  w-72">
                   <div className="bg-gray-900 text-white rounded-xl p-4 shadow-xl text-xs">
                     <p className="font-semibold text-sm mb-2">
                       Delete Information
                     </p>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 grid grid-cols-2 gap-2">
                       <div>
                         <span className="text-gray-400">Remark:</span>
                         <p className="mt-1">{row.deleteRemark || "N/A"}</p>
