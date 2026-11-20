@@ -13,7 +13,7 @@ export default function DataTable({
     .join(" ");
 
   return (
-    <div className="w-full bg-white shadow-md rounded-xl border border-gray-200 overflow-hidden">
+    <div className="w-full bg-white shadow-md rounded-xl border border-gray-200 ">
       <table className="w-full border-separate border-spacing-0">
         <thead className="bg-purple-400 border-b">
           <tr
