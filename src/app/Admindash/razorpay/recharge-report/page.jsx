@@ -337,28 +337,28 @@ export default function RazorpayReports() {
     },
     {
       title: "Failed Amount",
-      value: `₹${summary.failedAmount || 0}`,
+      value: `₹${summary.failedAmount?.toFixed?.(2) || 0}`,
       color: "text-red-600",
     },
     {
       title: "Total Transactions",
-      value: summary.totalCount || 0,
+      value: summary.totalCount?.toFixed?.(2) || 0,
       color: "text-purple-600",
     },
 
     {
       title: "Total GST",
-      value: `₹${summary.totalGST || 0}`,
+      value: `₹${summary.totalGST?.toFixed?.(2) || 0}`,
       color: "text-pink-600",
     },
     {
       title: " Total CGST",
-      value: `₹${summary.totalCGST || 0}`,
+      value: `₹${summary.totalCGST?.toFixed?.(2) || 0}`,
       color: "text-orange-600",
     },
     {
       title: "Total SGST / IGST",
-      value: `₹${summary.totalSGST || 0}`,
+      value: `₹${summary.totalSGST?.toFixed?.(2) || 0}`,
       color: "text-indigo-600",
     },
     {

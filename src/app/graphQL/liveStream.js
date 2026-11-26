@@ -125,6 +125,7 @@ export const GET_RUNNING_LIVE_STREAMS = gql`
       createdAt
       endedAt
       totalViews
+      isDeleted
 
       astrologer {
         id

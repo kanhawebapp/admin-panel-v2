@@ -285,22 +285,36 @@ export default function RunningLivesAdminPage() {
           </span>
         ),
       },
+{
+  header: "Actions",
+  render: (row) => {
+    const isDisabled = deleting || row.isDeleted === true;
 
-      {
-        header: "Actions",
-
-        render: (row) => (
-          <button
-            type="button"
-            onClick={() => handleDelete(row)}
-            disabled={deleting}
-            title="Delete running live stream"
-            className="rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {deleting ? "Deleting..." : "Delete"}
-          </button>
-        ),
-      },
+    return (
+      <button
+        type="button"
+        onClick={() => handleDelete(row)}
+        disabled={isDisabled}
+        title={
+          row.isDeleted
+            ? "This live stream is already deleted"
+            : "Delete running live stream"
+        }
+        className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+          row.isDeleted
+            ? "cursor-not-allowed bg-gray-300 text-gray-500 opacity-60"
+            : "bg-red-600 text-white hover:bg-red-700"
+        } disabled:cursor-not-allowed disabled:opacity-50`}
+      >
+        {row.isDeleted
+          ? "Deleted"
+          : deleting
+            ? "Deleting..."
+            : "Delete"}
+      </button>
+    );
+  },
+},
     ],
     [filteredLives, deleting]
   );
