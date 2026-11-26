@@ -607,7 +607,7 @@ const canViewProfile =
                 className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-4"
                 onClick={() => setPreviewImage(null)}
               >
-                <div className="relative max-h-[90vh] max-w-[90vw]">
+                <div className="relative h-[60%] w-[50%]">
                   <button
                     onClick={() => setPreviewImage(null)}
                     className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-black"
@@ -620,7 +620,8 @@ const canViewProfile =
                     width={100}
                     src={previewImage}
                     alt="Preview"
-                    className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+                    unoptimized
+                    className="h-full w-full rounded-lg object-contain"
                   />
                 </div>
               </div>

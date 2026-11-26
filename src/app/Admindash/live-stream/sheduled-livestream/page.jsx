@@ -12,47 +12,37 @@ import {
   ADMIN_DELETE_SCHEDULED_LIVE,
 } from "@/app/graphQL/liveStream";
 
-/* ============================================
-   CONSTANTS
-============================================ */
+
 
 const DEFAULT_PAGE_SIZE = 10;
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
-/* ============================================
-   DATE HELPERS
-============================================ */
 
-/**
- * Format a date in Indian Standard Time.
- */
+
 function formatDateTime(value) {
   if (!value) return "—";
 
-  const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return "—";
-  }
+  const timestamp = Number(value);
+
+  if (!Number.isFinite(timestamp)) return "—";
+
+  const date = new Date(timestamp);
+
+  if (Number.isNaN(date.getTime())) return "—";
 
   return new Intl.DateTimeFormat("en-IN", {
     timeZone: "Asia/Kolkata",
-    day: "2-digit",
-    month: "short",
+    day: "numeric",
+    month: "long",
     year: "numeric",
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
     hour12: true,
   }).format(date);
 }
 
-/**
- * Convert an API date into the value expected by
- * an HTML datetime-local input.
- *
- * The input displays the browser's local time.
- */
 function toDateTimeLocal(value) {
   if (!value) return "";
 
@@ -77,9 +67,7 @@ function toDateTimeLocal(value) {
   ].join("");
 }
 
-/**
- * Convert a datetime-local value into an ISO string.
- */
+
 function toISOString(value) {
   if (!value) return null;
 
@@ -92,9 +80,6 @@ function toISOString(value) {
   return date.toISOString();
 }
 
-/* ============================================
-   REUSABLE MESSAGE
-============================================ */
 
 function AlertMessage({ type = "error", children }) {
   if (!children) return null;
@@ -114,9 +99,6 @@ function AlertMessage({ type = "error", children }) {
   );
 }
 
-/* ============================================
-   PAGINATION BUTTON
-============================================ */
 
 function PaginationButton({
   children,
@@ -143,30 +125,19 @@ function PaginationButton({
   );
 }
 
-/* ============================================
-   MAIN COMPONENT
-============================================ */
 
 export default function ScheduledLivesAdminPage() {
-  /* ============================================
-     PAGINATION STATE
-  ============================================ */
+
 
   const [currentPage, setCurrentPage] = useState(1);
 
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  /* ============================================
-     SEARCH STATE
-  ============================================ */
 
   const [search, setSearch] = useState("");
 
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  /* ============================================
-     EDIT STATE
-  ============================================ */
 
   const [selectedLive, setSelectedLive] = useState(null);
 
@@ -176,9 +147,6 @@ export default function ScheduledLivesAdminPage() {
 
   const [editScheduledEndAt, setEditScheduledEndAt] = useState("");
 
-  /* ============================================
-     UI STATE
-  ============================================ */
 
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -186,9 +154,6 @@ export default function ScheduledLivesAdminPage() {
 
   const [deletingLiveId, setDeletingLiveId] = useState(null);
 
-  /* ============================================
-     DEBOUNCE SEARCH
-  ============================================ */
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -198,17 +163,13 @@ export default function ScheduledLivesAdminPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  /* ============================================
-     RESET PAGE WHEN SEARCH CHANGES
-  ============================================ */
+
 
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch, pageSize]);
 
-  /* ============================================
-     GET SCHEDULED LIVES
-  ============================================ */
+
 
   const { data, loading, error, refetch, networkStatus } = useQuery(
     GET_ALL_SCHEDULED_LIVES,
@@ -223,9 +184,7 @@ export default function ScheduledLivesAdminPage() {
     },
   );
 
-  /* ============================================
-     EXTRACT PAGINATION RESPONSE
-  ============================================ */
+
 
   const paginationData = data?.getAllScheduledLives;
 
@@ -235,18 +194,12 @@ export default function ScheduledLivesAdminPage() {
 
   const totalPages = paginationData?.totalPages ?? 0;
 
-  /*
-   * Use the requested page for pagination actions.
-   * The server may clamp the page if records have
-   * been deleted or search results have changed.
-   */
+
   const serverCurrentPage = paginationData?.currentPage ?? currentPage;
 
   const isRefreshing = loading && !data;
 
-  /* ============================================
-     CORRECT PAGE IF IT NO LONGER EXISTS
-  ============================================ */
+
 
   useEffect(() => {
     if (!paginationData) return;
@@ -261,9 +214,6 @@ export default function ScheduledLivesAdminPage() {
     }
   }, [paginationData, currentPage, totalPages, totalRecords]);
 
-  /* ============================================
-     UPDATE MUTATION
-  ============================================ */
 
   const [updateScheduledLive, { loading: updating }] = useMutation(
     ADMIN_UPDATE_SCHEDULED_LIVE,
@@ -276,9 +226,6 @@ export default function ScheduledLivesAdminPage() {
     },
   );
 
-  /* ============================================
-     DELETE MUTATION
-  ============================================ */
 
   const [deleteScheduledLive, { loading: deleting }] = useMutation(
     ADMIN_DELETE_SCHEDULED_LIVE,
@@ -291,9 +238,6 @@ export default function ScheduledLivesAdminPage() {
     },
   );
 
-  /* ============================================
-     PAGINATION HANDLERS
-  ============================================ */
 
   const handlePageChange = useCallback(
     (page) => {
@@ -321,9 +265,7 @@ export default function ScheduledLivesAdminPage() {
     setCurrentPage(1);
   };
 
-  /* ============================================
-     PAGE NUMBER GENERATION
-  ============================================ */
+
 
   const pageNumbers = useMemo(() => {
     if (totalPages <= 0) {
@@ -347,9 +289,7 @@ export default function ScheduledLivesAdminPage() {
     return pages;
   }, [currentPage, totalPages]);
 
-  /* ============================================
-     EDIT HANDLER
-  ============================================ */
+ 
 
   const handleEdit = (live) => {
     setSelectedLive(live);
@@ -365,9 +305,7 @@ export default function ScheduledLivesAdminPage() {
     setActionError("");
   };
 
-  /* ============================================
-     CLOSE EDIT MODAL
-  ============================================ */
+
 
   const closeEditModal = () => {
     if (updating) return;
@@ -381,9 +319,6 @@ export default function ScheduledLivesAdminPage() {
     setEditScheduledEndAt("");
   };
 
-  /* ============================================
-     UPDATE HANDLER
-  ============================================ */
 
   const handleUpdate = async (event) => {
     event.preventDefault();
@@ -469,9 +404,7 @@ export default function ScheduledLivesAdminPage() {
     }
   };
 
-  /* ============================================
-     DELETE HANDLER
-  ============================================ */
+
 
   const handleDelete = async (live) => {
     if (!live?.id) {
@@ -504,14 +437,6 @@ export default function ScheduledLivesAdminPage() {
 
       setSuccessMessage("Scheduled live deleted successfully.");
 
-      /*
-       * If the last row on the current page is deleted,
-       * move to the previous page where appropriate.
-       *
-       * Example:
-       * Page 3 contains one record. After deleting it,
-       * navigate to page 2 instead of showing an empty page.
-       */
       if (scheduledLives.length === 1 && currentPage > 1) {
         setCurrentPage((previousPage) => previousPage - 1);
       } else {
@@ -534,9 +459,7 @@ export default function ScheduledLivesAdminPage() {
     }
   };
 
-  /* ============================================
-     SUMMARY
-  ============================================ */
+ 
 
   const firstRecord =
     totalRecords === 0 ? 0 : (serverCurrentPage - 1) * pageSize + 1;
@@ -548,17 +471,11 @@ export default function ScheduledLivesAdminPage() {
     0,
   );
 
-  /* ============================================
-     RENDER
-  ============================================ */
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
-        {/* ========================================
-            PAGE HEADER
-        ======================================== */}
-
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
@@ -578,43 +495,30 @@ export default function ScheduledLivesAdminPage() {
           </Link>
         </div>
 
-        {/* ========================================
-            ALERT MESSAGES
-        ======================================== */}
-
         <AlertMessage type="success">{successMessage}</AlertMessage>
 
         <AlertMessage type="error">
           {actionError || error?.message}
         </AlertMessage>
 
-        {/* ========================================
-            SUMMARY CARDS
-        ======================================== */}
-
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* TOTAL RECORDS */}
-
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">
+          <div className="rounded-xl flex items-center justify-between border border-purple-300 bg-white p-3  shadow-sm">
+            <p className="text-xs font-medium text-gray-500">
               Total Scheduled Lives
             </p>
 
-            <p className="mt-2 text-3xl font-bold text-gray-900">
+            <p className="mt-2 text-xl font-bold text-gray-900">
               {totalRecords}
             </p>
 
-            <p className="mt-1 text-xs text-gray-500">
-              Records matching the current search
-            </p>
+           
           </div>
 
-          {/* CURRENT PAGE */}
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">Current Page</p>
+          <div className="rounded-xl flex items-center justify-between border border-violet-300 bg-white p-3 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">Current Page</p>
 
-            <p className="mt-2 text-3xl font-bold text-gray-900">
+            <p className="mt-2 text-2xl font-bold text-gray-900">
               {totalPages > 0 ? serverCurrentPage : 0}
               <span className="text-lg font-medium text-gray-400">
                 {" "}
@@ -622,33 +526,23 @@ export default function ScheduledLivesAdminPage() {
               </span>
             </p>
 
-            <p className="mt-1 text-xs text-gray-500">
-              {pageSize} records per page
-            </p>
           </div>
 
-          {/* CURRENT PAGE VIEWS */}
-
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">
+          <div className="rounded-xl flex items-center justify-between border border-blue-300 bg-white p-3 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">
               Views on This Page
             </p>
 
-            <p className="mt-2 text-3xl font-bold text-gray-900">
+            <p className="mt-2 text-2xl font-bold text-gray-900">
               {pageViews.toLocaleString("en-IN")}
             </p>
 
-            <p className="mt-1 text-xs text-gray-500">
-              Sum of views for the displayed records
-            </p>
           </div>
         </div>
 
-        {/* ========================================
-            SEARCH AND PAGE SIZE
-        ======================================== */}
+      
 
-        <div className="mb-5 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="mb-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             {/* SEARCH */}
 
@@ -715,10 +609,6 @@ export default function ScheduledLivesAdminPage() {
             </div>
           </div>
         </div>
-
-        {/* ========================================
-            TABLE
-        ======================================== */}
 
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
           {/* TABLE HEADER */}
@@ -837,8 +727,6 @@ export default function ScheduledLivesAdminPage() {
                     </tr>
                   )}
 
-                  {/* LIVE ROWS */}
-
                   {scheduledLives.map((live, index) => {
                     const astrologerName =
                       live.astrologer?.displayName ||
@@ -852,8 +740,6 @@ export default function ScheduledLivesAdminPage() {
 
                     return (
                       <tr key={live.id} className="transition hover:bg-gray-50">
-                        {/* SERIAL NUMBER */}
-
                         <td className="whitespace-nowrap px-5 py-4 text-gray-600">
                           {serialNumber}
                         </td>
@@ -862,18 +748,6 @@ export default function ScheduledLivesAdminPage() {
 
                         <td className="px-5 py-4">
                           <div className="flex min-w-[190px] items-center gap-3">
-                            {live.astrologer?.profilePic ? (
-                              <img
-                                src={live.astrologer.profilePic}
-                                alt={astrologerName}
-                                className="h-11 w-11 shrink-0 rounded-full border border-gray-200 object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-600">
-                                {astrologerName.charAt(0).toUpperCase()}
-                              </div>
-                            )}
-
                             <div className="min-w-0">
                               <p className="truncate font-semibold text-gray-900">
                                 {astrologerName}
@@ -889,7 +763,7 @@ export default function ScheduledLivesAdminPage() {
                               )}
 
                               <p className="mt-1 max-w-[180px] break-all text-xs text-gray-400">
-                                ID: {live.astrologerId.slice(0,8) || "—"}
+                                ID: {live.astrologerId.slice(0, 8) || "—"}
                               </p>
                             </div>
                           </div>
@@ -904,28 +778,24 @@ export default function ScheduledLivesAdminPage() {
                             </p>
 
                             <p className="mt-1 break-all text-xs text-gray-500">
-                              Channel: {live.channelName.slice(0,8) || "—"}
+                              Channel: {live.channelName.slice(0, 8) || "—"}
                             </p>
 
                             <p className="mt-1 break-all text-xs text-gray-400">
-                              ID: {live.id.slice(0,8)}
+                              ID: {live.id.slice(0, 8)}
                             </p>
                           </div>
                         </td>
 
-                        {/* START DATE */}
-
-                        <td className="whitespace-nowrap px-5 py-4 text-gray-600">
+                        <td className="whitespace-nowrap text-xs px-2 py-4 text-gray-600">
                           {formatDateTime(live.scheduledAt)}
                         </td>
 
-                        {/* END DATE */}
-
-                        <td className="whitespace-nowrap px-5 py-4 text-gray-600">
+                        <td className="whitespace-nowrap text-xs px-2 py-4 text-gray-600">
                           {formatDateTime(live.scheduledEndAt)}
                         </td>
 
-                        {/* STATUS */}
+                 
 
                         <td className="whitespace-nowrap px-5 py-4">
                           <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
@@ -933,34 +803,33 @@ export default function ScheduledLivesAdminPage() {
                           </span>
                         </td>
 
-                        {/* TOTAL VIEWS */}
-
                         <td className="whitespace-nowrap px-5 py-4 text-right font-medium text-gray-800">
                           {(Number(live.totalViews) || 0).toLocaleString(
                             "en-IN",
                           )}
                         </td>
 
-                        {/* ACTIONS */}
-
                         <td className="px-5 py-4">
                           <div className="flex items-center justify-center gap-2">
-                            {/* EDIT */}
                             <button
                               type="button"
                               onClick={() => handleEdit(live)}
-                              disabled={live.isDeleted || isDeleting || updating}
+                              disabled={
+                                live.isDeleted || isDeleting || updating
+                              }
                               className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-blue-50"
                             >
                               Edit
                             </button>
 
-                            {/* DELETE */}
                             <button
                               type="button"
                               onClick={() => handleDelete(live)}
                               disabled={
-                                live.isDeleted || isDeleting || deleting || updating
+                                live.isDeleted ||
+                                isDeleting ||
+                                deleting ||
+                                updating
                               }
                               className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-red-50"
                             >
@@ -976,13 +845,7 @@ export default function ScheduledLivesAdminPage() {
             </div>
           )}
 
-          {/* ========================================
-              PAGINATION FOOTER
-          ======================================== */}
-
           <div className="flex flex-col gap-4 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            {/* RECORD SUMMARY */}
-
             <p className="text-sm text-gray-500">
               {totalRecords > 0 ? (
                 <>
@@ -1001,11 +864,7 @@ export default function ScheduledLivesAdminPage() {
               )}
             </p>
 
-            {/* PAGINATION CONTROLS */}
-
             <div className="flex flex-wrap items-center gap-2">
-              {/* FIRST PAGE */}
-
               <PaginationButton
                 onClick={() => handlePageChange(1)}
                 disabled={currentPage <= 1 || loading || totalPages === 0}
@@ -1013,16 +872,12 @@ export default function ScheduledLivesAdminPage() {
                 First
               </PaginationButton>
 
-              {/* PREVIOUS */}
-
               <PaginationButton
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage <= 1 || loading || totalPages === 0}
               >
                 Previous
               </PaginationButton>
-
-              {/* PAGE NUMBERS */}
 
               {pageNumbers.map((page) => (
                 <PaginationButton
@@ -1035,8 +890,6 @@ export default function ScheduledLivesAdminPage() {
                 </PaginationButton>
               ))}
 
-              {/* NEXT */}
-
               <PaginationButton
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={
@@ -1045,8 +898,6 @@ export default function ScheduledLivesAdminPage() {
               >
                 Next
               </PaginationButton>
-
-              {/* LAST PAGE */}
 
               <PaginationButton
                 onClick={() => handlePageChange(totalPages)}
@@ -1059,10 +910,6 @@ export default function ScheduledLivesAdminPage() {
             </div>
           </div>
         </div>
-
-        {/* ========================================
-            EDIT MODAL
-        ======================================== */}
 
         {selectedLive && (
           <div
@@ -1079,8 +926,6 @@ export default function ScheduledLivesAdminPage() {
               aria-labelledby="edit-live-title"
               className="my-auto w-full max-w-xl rounded-2xl bg-white shadow-2xl"
             >
-              {/* MODAL HEADER */}
-
               <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-6 py-5">
                 <div>
                   <h2
@@ -1106,12 +951,8 @@ export default function ScheduledLivesAdminPage() {
                 </button>
               </div>
 
-              {/* MODAL FORM */}
-
               <form onSubmit={handleUpdate}>
                 <div className="space-y-5 px-6 py-6">
-                  {/* TITLE */}
-
                   <div>
                     <label
                       htmlFor="edit-live-title-input"
@@ -1132,8 +973,6 @@ export default function ScheduledLivesAdminPage() {
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
                     />
                   </div>
-
-                  {/* CHANNEL NAME */}
 
                   <div>
                     <label
@@ -1156,8 +995,6 @@ export default function ScheduledLivesAdminPage() {
                     </p>
                   </div>
 
-                  {/* START DATE */}
-
                   <div>
                     <label
                       htmlFor="edit-live-start"
@@ -1178,8 +1015,6 @@ export default function ScheduledLivesAdminPage() {
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
                     />
                   </div>
-
-                  {/* END DATE */}
 
                   <div>
                     <label
@@ -1202,8 +1037,6 @@ export default function ScheduledLivesAdminPage() {
                     />
                   </div>
 
-                  {/* ASTROLOGER INFO */}
-
                   <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                       Astrologer
@@ -1216,8 +1049,6 @@ export default function ScheduledLivesAdminPage() {
                     </p>
                   </div>
                 </div>
-
-                {/* MODAL FOOTER */}
 
                 <div className="flex flex-col-reverse gap-3 border-t border-gray-200 px-6 py-4 sm:flex-row sm:justify-end">
                   <button
@@ -1241,10 +1072,6 @@ export default function ScheduledLivesAdminPage() {
             </div>
           </div>
         )}
-
-        {/* ========================================
-            BACKGROUND REFRESH INDICATOR
-        ======================================== */}
 
         {loading && data && (
           <p className="mt-3 text-right text-xs text-gray-400">
