@@ -573,19 +573,19 @@ const refundStatusMap = useMemo(() => {
 
         <div className="flex flex-wrap gap-3">
           <div className="bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-semibold">
-            Coins Deducted : {totalCoinsDeducted}
+            Coins Deducted : {totalCoinsDeducted?.toFixed(2)}
           </div>
 
           <div className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold">
-            Coins Earned : {totalCoinsEarned}
+            Coins Earned : {totalCoinsEarned?.toFixed(2)}
           </div>
 
           <div className="bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-semibold">
-            Commission : {totalCommission}
+            Commission : {totalCommission?.toFixed(2)}
           </div>
 
           <div className="bg-black text-white px-4 py-2 rounded-lg text-sm font-semibold">
-            Total Records : {totalCount}
+            Total Records : {totalCount?.toFixed(2)}
           </div>
         </div>
       </div>
