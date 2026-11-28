@@ -12,7 +12,17 @@
     }
 }
 
-
+@layer components {
+  .form-input {
+    @apply w-full rounded-xl border border-gray-200/80
+    bg-white/70 backdrop-blur-md
+    px-4 py-3 text-sm text-gray-800
+    outline-none transition-all duration-200
+    placeholder:text-gray-400
+    focus:border-purple-400
+    focus:ring-4 focus:ring-purple-100/70;
+  }
+}
 
 /* editor custom css  */
 .prose h1 {
